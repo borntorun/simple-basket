@@ -10,7 +10,7 @@
     module.exports = factory(require('lodash'));
   }
   else {
-    factory(global._);
+    global.simplebasket = factory(global._);
   }
 })(this, function( _ ) {
   'use strict'

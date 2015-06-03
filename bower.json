@@ -1,0 +1,27 @@
+{
+  "name": "simple-basket",
+  "version": "0.0.1",
+  "authors": [
+    "Joao Carvalho <jmmtcarvalho@gmail.com>"
+  ],
+  "description": "A simple store of values",
+  "keywords": [
+    "javascript",
+    "basket",
+    "store",
+    "shopping"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {},
+  "dependencies": {
+    "lodash": "~3.9.3"
+  }
+}

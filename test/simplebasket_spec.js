@@ -1,27 +1,29 @@
-var should = require('should'),
-  _ = require('lodash');
+'use strict';
 
-describe("simplebasket", function() {
+require('should');
+var _ = require('lodash');
+
+describe('simplebasket', function() {
   var basket;
 
   beforeEach(function() {
     basket = require('../src/simplebasket').create();
   });
 
-  describe("#add()", function() {
-    it("adds 1 item to basket", function() {
+  describe('#add()', function() {
+    it('adds 1 item to basket', function() {
       basket.add({o: 1});
       (basket.count()).should.equal(1);
     });
-    it("adds 3 item to basket", function() {
+    it('adds 3 item to basket', function() {
       basket.add({o: 1});
       basket.add({o: 2});
       basket.add({o: 3});
       (basket.count()).should.equal(3);
     });
   });
-  describe("#get...()", function() {
-    it("getAll", function() {
+  describe('#get...()', function() {
+    it('getAll', function() {
       basket.add({o: 1});
       (basket.count()).should.equal(1);
       basket.add({o: 2});
@@ -30,7 +32,7 @@ describe("simplebasket", function() {
       (_.isArray(copy)).should.be.true;
       (copy.length).should.equal(3);
     });
-    it("getClone", function() {
+    it('getClone', function() {
       basket.add({o: 1});
       (basket.count()).should.equal(1);
       basket.add({o: 2});
@@ -39,7 +41,7 @@ describe("simplebasket", function() {
       (_.isArray(clone)).should.be.true;
       (clone.length).should.equal(3);
     });
-    it("getAll should copy items and mantain references", function() {
+    it('getAll should copy items and mantain references', function() {
       var a = [1, 2, 3],
         b = {o: 1};
 
@@ -99,7 +101,7 @@ describe("simplebasket", function() {
       (basket.getAll()[0].length).should.equal(4);
 
     });
-    it("getClone should clone items and not mantain references", function() {
+    it('getClone should clone items and not mantain references', function() {
       var a = [1, 2, 3],
         b = {o: 1};
 
@@ -161,8 +163,8 @@ describe("simplebasket", function() {
 
     });
   });
-  describe("#remove...()", function() {
-    it("remove by key", function() {
+  describe('#remove...()', function() {
+    it('remove by key', function() {
       basket.add(
         {o: 1},
         {o: 2, name: 'john'},
@@ -190,7 +192,7 @@ describe("simplebasket", function() {
       (basket.count()).should.equal(0);
 
     });
-    it("remove by position", function() {
+    it('remove by position', function() {
       basket.add(
         {o: 1},
         {o: 2, name: 'john'},
@@ -215,8 +217,8 @@ describe("simplebasket", function() {
 
     });
   });
-  describe("#iterate", function() {
-    it("passing in a function", function() {
+  describe('#iterate', function() {
+    it('passing in a function', function() {
       basket.add({o: 1}, {o: 2}, {o: 3}, {o: 4});
 
       (basket.count()).should.equal(4);
@@ -232,7 +234,7 @@ describe("simplebasket", function() {
       (copy[0].value + copy[1].value + copy[2].value + copy[3].value ).should.equal(10);
 
     });
-    it("not passing in a function", function() {
+    it('not passing in a function', function() {
       basket.add({o: 1}, {o: 2}, {o: 3}, {o: 4});
 
       (basket.count()).should.equal(4);
@@ -244,8 +246,8 @@ describe("simplebasket", function() {
       (copy[0].o + copy[1].o + copy[2].o + copy[3].o ).should.equal(10);
     });
   });
-  describe("#other", function() {
-    it("clear", function() {
+  describe('#other', function() {
+    it('clear', function() {
       basket.add({o: 1}, {o: 2}, {o: 3}, {o: 4});
 
       (basket.count()).should.equal(4);
@@ -255,7 +257,7 @@ describe("simplebasket", function() {
       (basket.count()).should.equal(0);
 
     });
-    it("set", function() {
+    it('set', function() {
       basket.set([{o: 1}, {o: 2}, {o: 3}, {o: 4}]);
 
       (basket.count()).should.equal(4);
@@ -274,13 +276,12 @@ describe("simplebasket", function() {
 
       items[0].o++;
 
-      var copy = basket.getAll();
-
+      copy = basket.getAll();
 
       (copy[0].o + copy[1].o + copy[2].o + copy[3].o ).should.equal(10);
 
     });
-  })
+  });
 
 });
 

@@ -1,7 +1,7 @@
 node_modules
+bower_components
 .tmp
 .idea
-bower_components
 *.sublime-*
 TODO
 npm*.log

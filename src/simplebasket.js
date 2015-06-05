@@ -13,7 +13,7 @@
     global.simplebasket = factory(global._);
   }
 })(this, function( _ ) {
-  'use strict'
+  'use strict';
 
   function Basket() {
     //basket items

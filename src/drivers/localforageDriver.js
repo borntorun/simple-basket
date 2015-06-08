@@ -2,24 +2,24 @@
 (function( global, factory ) {
   'use strict';
   if ( typeof define === 'function' && define.amd ) {
-    define(['localforage'], function( localforage ) {
-      factory(localforage);
+    define('localforageDriver', ['localforage', 'sessionStorageWrapper'], function( localforage, sessionStorageWrapper ) {
+      factory(localforage, sessionStorageWrapper);
     });
   }
   else if ( typeof exports === 'object' ) {
-    module.exports = factory(require('localforage'));
+    module.exports = factory(require('localforage'), require('sessionStorageWrapper'));
   }
   else {
-    global.localforageDriver = factory(global.localforage);
+    global.localforageDriver = factory(global.localforage, global.sessionStorageWrapper);
   }
-})(this, function( localforage ) {
+})(this, function( localforage, sessionStorageWrapper ) {
   'use strict';
 
   var STORAGEWRAPPERS = {
     'localstorage': {name: localforage.LOCALSTORAGE},
     'indexeddb': { name: localforage.INDEXEDDB },
     'websql': { name: localforage.WEBSQL},
-    'sessionstorage': { name: 'sessionStorageWrapper', driver: window.sessionStorageWrapper }
+    'sessionstorage': { name: 'sessionStorageWrapper', driver: sessionStorageWrapper }
   };
 
   var ERRORS = {
@@ -67,7 +67,6 @@
 
     this.name = 'localforageDriver';
     this.config = function( wrapperStorage, opt ) {
-
       /**
        *
        * @param key
@@ -87,7 +86,7 @@
           return;
         }
         if ( !wrapper ) {
-          reject(new Error('Driver wrapper is invalid.[' + wrapperStorage + ']'));
+          reject(new Error('Driver is invalid.[' + wrapperStorage + ']'));
           return;
         }
 
@@ -117,7 +116,11 @@
             });
         }
 
-        if ( wrapper.driver ) {
+        if ( wrapper.hasOwnProperty('driver') ) {
+          if (!wrapper.driver) {
+            reject(new Error('Driver is not defined.[' + wrapper.name + ']'));
+            return;
+          }
           //custom driver first define it
           localForageInstance.defineDriver(wrapper.driver)
             .then(function() {
@@ -163,6 +166,7 @@
       return thePromisse;
 
     };
+
     this.save = function( value ) {
       var thePromisse = new Promise(function( resolve, reject ) {
 
@@ -188,6 +192,7 @@
       return thePromisse;
 
     };
+
     this.clear = function() {
       var self = this;
 

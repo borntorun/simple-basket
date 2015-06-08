@@ -2,6 +2,29 @@ describe('simplebasket', function() {
   'use strict';
   var basket;
 
+  //Error mocha/phantomjs TypeError: JSON.stringify cannot serialize cyclic structures.
+  //https://github.com/metaskills/mocha-phantomjs/issues/104
+  var stringify = JSON.stringify;
+  before(function() {
+    JSON.stringify = function( obj ) {
+      var seen = [];
+
+      return stringify(obj, function( key, val ) {
+        if ( typeof val === 'object' ) {
+          if ( seen.indexOf(val) >= 0 ) {
+            return;
+          }
+          seen.push(val);
+        }
+        return val;
+      });
+    };
+  });
+  after(function() {
+    JSON.stringify = stringify;
+  });
+
+
   beforeEach(function() {
     basket = window.simplebasket.create();
 

@@ -45,6 +45,7 @@
     "element": true,
     "by": true,
     "sinon": true,
-    "jasmine": true
+    "jasmine": true,
+    "phantom": true
   }
 }

@@ -66,6 +66,7 @@ describe('localforageDriver', function() {
     it('should be created', function() {
       (localforageDriver.name).should.equal('localforageDriver');
     });
+
     it('should allow config localstorage', function( done ) {
       localforageDriver.config(window.localforageDriver.STORAGE.LOCALSTORAGE)
         .then(function() {
@@ -75,7 +76,8 @@ describe('localforageDriver', function() {
           done(error);
         });
     });
-    it('should allow config indexeddb', function( done ) {
+    //if ( phantom) {
+    /*it('should allow config indexeddb', function( done ) {
       localforageDriver.config(window.localforageDriver.STORAGE.INDEXEDDB)
         .then(function() {
           done();
@@ -83,7 +85,9 @@ describe('localforageDriver', function() {
         .catch(function(error) {
           done(error);
         });
-    });
+    });*/
+    //}
+
     it('should allow config websql', function( done ) {
       localforageDriver.config(window.localforageDriver.STORAGE.WEBSQL)
         .then(function() {
@@ -93,6 +97,17 @@ describe('localforageDriver', function() {
           done(error);
         });
     });
+
+    it('should allow config sessionstorage', function( done ) {
+      localforageDriver.config(window.localforageDriver.STORAGE.SESSIONSTORAGE)
+        .then(function() {
+          done();
+        })
+        .catch(function( error ) {
+          done(error);
+        });
+    });
+
     it('should be configured with default options', function( done ) {
       localforageDriver.config(window.localforageDriver.STORAGE.LOCALSTORAGE)
         .then(function() {
@@ -100,6 +115,7 @@ describe('localforageDriver', function() {
           doneTry(done, function() {
             (opt.name).should.equal('app-localforageDriver');
             (opt.storeName).should.equal('store');
+            console.log(opt.description);
             (opt.description).should.equal('');
             (opt.key).should.equal('key');
           });
@@ -256,7 +272,53 @@ describe('localforageDriver', function() {
     });
   });
 
-  describe('#clear==>', function() {
+  describe('#save & load sessionstorage==>', function() {
+    var localforageDriver,
+      valueToSave = '12345';
+
+    beforeEach(function( done ) {
+      window.localforageDriver.create(window.localforageDriver.STORAGE.SESSIONSTORAGE)
+        .then(function( value ) {
+          localforageDriver = value;
+          done();
+        })
+        .catch(function( error ) {
+          done(error);
+        });
+    });
+    it('should save value', function( done ) {
+      localforageDriver.save(valueToSave)
+        .then(function( data ) {
+          doneTry(done, function() {
+            (data).should.equal(valueToSave);
+            var theValueSaved = window.sessionStorage.getItem('app-localforageDriver/key');
+            (theValueSaved).should.equal(JSON.stringify(valueToSave));
+          });
+        })
+        .catch(function( error ) {
+          done(error);
+        });
+    });
+    it('should get value', function( done ) {
+      var anotherValue = '54321';
+      localforageDriver.save(anotherValue)
+        .then(function() {
+          localforageDriver.load()
+            .then(function( data ) {
+              doneTry(done, function() {
+                (data).should.equal(anotherValue);
+              });
+            });
+        })
+        .catch(function( error ) {
+          done(error);
+        });
+
+    });
+
+  });
+
+  describe('#clear localstorage==>', function() {
     var localforageDriver;
 
     beforeEach(function( done ) {
@@ -270,6 +332,42 @@ describe('localforageDriver', function() {
         .then(function() {
           doneTry(done, function() {
             var theValueSaved = window.localStorage.getItem('app-localforageDriver/key');
+            (theValueSaved === null).should.equal(true);
+          });
+        })
+        .catch(function( error ) {
+          done(error);
+        });
+    });
+    it('should be silent whan clearing value not saved', function( done ) {
+      localforageDriver.clear()
+        .then(function() {
+          done();
+        })
+        .catch(function( error ) {
+          done(error);
+        });
+    });
+  });
+
+  describe('#clear sessionstorage==>', function() {
+    var localforageDriver;
+
+    beforeEach(function( done ) {
+      window.localforageDriver.create(window.localforageDriver.STORAGE.SESSIONSTORAGE)
+        .then(function( value ) {
+          localforageDriver = value;
+          done();
+        })
+        .catch(function( error ) {
+          done(error);
+        });
+    });
+    it('should clear value', function( done ) {
+      localforageDriver.clear()
+        .then(function() {
+          doneTry(done, function() {
+            var theValueSaved = window.sessionStorage.getItem('app-localforageDriver/key');
             (theValueSaved === null).should.equal(true);
           });
         })

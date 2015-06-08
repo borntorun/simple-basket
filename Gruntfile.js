@@ -214,27 +214,7 @@ module.exports = function( grunt ) {
 
       karma: './node_modules/karma/bin/karma start'
     },
-    /**
-     * Test runner
-     */
-    karma: {
-      /*mochasingle: {
-          configFile: 'karma.mocha.conf.js',
-          singleRun: true
-      },*/
-      jasminesingle: {
-        configFile: 'karma.jasmine.conf.js',
-        singleRun: true
-      },
-      /*mocha: {
-          configFile: 'karma.mocha.conf.js',
-          singleRun: false
-      },*/
-      jasmine: {
-        configFile: 'karma.jasmine.conf.js',
-        singleRun: false
-      }
-    },
+
     /**
      * mocha unit tests
      */
@@ -443,11 +423,7 @@ module.exports = function( grunt ) {
   /**
    * Test tasks
    */
-  grunt.registerTask('test', ['jshint', 'connect', 'mocha', 'watch:mochaunit' /*'karma:mochasingle', 'karma:jasminesingle'*/]);
-  //grunt.registerTask('test:e2e', ['jshint', 'connect:e2etest', 'protractor_webdriver:continuous', 'protractor:continuous', 'watch:protractor']);
-  //grunt.registerTask('test:e2e:single', ['jshint', 'connect:e2etest', 'protractor_webdriver:single', 'protractor:single']);
-  ////grunt.registerTask('test:mocha', ['jshint', 'karma:mocha']);
-  //grunt.registerTask('test:jasmine', ['jshint', 'karma:jasmine']);
+  grunt.registerTask('test', ['jshint', 'connect', 'mocha', 'watch:mochaunit' ]);
 
   /**
    * Build Task

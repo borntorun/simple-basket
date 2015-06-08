@@ -2,11 +2,7 @@
 this.mocha.setup('bdd');
 
 function runTests() {
-  // || this.shimIndexedDB
   var runner = this.mocha.run();
-
-
-
 
   var failedTests = [];
 

@@ -2,19 +2,19 @@
   'use strict';
   if ( typeof define === 'function' && define.amd ) {
     define(['simplebasket-extend'], function( simplebasket ) {
-      factory(simplebasket);
+      return factory(simplebasket);
     });
   }
   else if ( typeof exports === 'object' ) {
-    factory(require('simplebasket'));
+    module.exports = factory(require('simplebasket-extend'));
   }
   else {
-    factory(global.simplebasket);
+    global.simplebasket = factory(global.simplebasket);
   }
 })(this, function( simplebasket ) {
   'use strict';
 
-  if(!simplebasket) {
+  if(!simplebasket || !simplebasket.plug) {
     return;
   }
 
@@ -68,7 +68,8 @@
       });
     }
   }
-  /*function hasProp( obj, key ) {
-    return Object.prototype.hasOwnProperty.call(obj, key);
-  }*/
+
+  return simplebasket;
+
+
 });

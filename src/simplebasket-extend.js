@@ -2,22 +2,23 @@
 (function( global, factory ) {
   'use strict';
   if ( typeof define === 'function' && define.amd ) {
-    define('simplebasket-extend', ['simplebasket'], function( simplebasket ) {
-      factory(simplebasket);
+    define(['simplebasket'], function( simplebasket ) {
+      return factory(simplebasket);
     });
   }
   else if ( typeof exports === 'object' ) {
     module.exports = factory(require('simplebasket'));
   }
   else {
-    factory(global.simplebasket);
+    global.simplebasket = factory(global.simplebasket);
   }
 })(this, function( simplebasket ) {
   'use strict';
 
   var Basket = simplebasket.Basket;
 
-  var noop = function() {};
+  var noop = function() {
+  };
 
   function BasePluginWrapper( type ) {
     this.type = typeof type === 'string' ? type : '';
@@ -31,7 +32,7 @@
 
   Basket.prototype.implements = function( oInterface, driver ) {
 
-    if (this instanceof Basket === false) {
+    if ( this instanceof Basket === false ) {
       return false;
     }
     //test if is invalid interface
@@ -148,6 +149,5 @@
   function hasProp( obj, key ) {
     return Object.prototype.hasOwnProperty.call(obj, key);
   }
-
 
 });

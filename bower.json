@@ -4,7 +4,7 @@
   "authors": [
     "Joao Carvalho <jmmtcarvalho@gmail.com>"
   ],
-  "description": "A simple store of values",
+  "description": "A simple javascript basket for values",
   "keywords": [
     "javascript",
     "basket",

@@ -1,7 +1,7 @@
 {
   "name": "simple-basket",
   "version": "0.0.1",
-  "description": "A simple store of values",
+  "description": "A simple javascript basket for values",
   "main": "dist/simplebasket.js",
   "scripts": {
     "test": "grunt test"

@@ -1,2 +1,3 @@
 # simple-basket
-A simple store for values
+
+A simple javascript basket for values.

@@ -223,7 +223,8 @@ module.exports = function( grunt ) {
         options: {
           logErrors:true,
           urls: [
-            'http://localhost:8888/test/unit/main.html'
+            'http://localhost:8888/test/unit/main.html',
+            'http://localhost:8888/test/unit/plugin.html'
           ]
         }
       }

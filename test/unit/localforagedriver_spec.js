@@ -23,26 +23,6 @@ describe('localforageDriver', function() {
     JSON.stringify = stringify;
   });
 
-  /*beforeEach(function(done) {
-    window.localforageDriver.create(window.localforageDriver.STORAGE.LOCALSTORAGE,{name:'app', storeName:'store', key: 'basket' }).then(function(value){
-      localforageDriver1 = value;
-      done();
-    });
-    window.localforageDriver.create().then(function(value){
-      localforageDriver2 = value;
-      done();
-    });
-  });*/
-  //  /*beforeEach(function() {
-  //    localforageDriver.config(localforageDriver.STORAGE.LOCALSTORAGE,{name:'app', storeName:'store', key: 'basket' })
-  //      .then(function(){
-  //        console.log('config:ok');
-  //      })
-  //      .catch(function(error){
-  //        console.log('config:',error);
-  //      });
-  //  });*/
-
   function doneTry( done, expectations ) {
     try {
       expectations();
@@ -125,6 +105,7 @@ describe('localforageDriver', function() {
         });
 
     });
+
     it('should not allow unknown driver config', function( done ) {
       localforageDriver.config('not a driver')
         .then(function() {
@@ -134,6 +115,7 @@ describe('localforageDriver', function() {
           done();
         });
     });
+
     it('should not allow double config', function( done ) {
       localforageDriver.config(window.localforageDriver.STORAGE.LOCALSTORAGE)
         .then(function() {
@@ -148,6 +130,7 @@ describe('localforageDriver', function() {
           done(error);
         });
     });
+
     it('should allow create multiple instances', function( done ) {
       window.localforageDriver.create()
         .then(function( value ) {
@@ -318,7 +301,7 @@ describe('localforageDriver', function() {
 
   });
 
-  describe('#clear localstorage==>', function() {
+  describe('#delete localstorage==>', function() {
     var localforageDriver;
 
     beforeEach(function( done ) {
@@ -327,7 +310,7 @@ describe('localforageDriver', function() {
         done();
       });
     });
-    it('should clear value', function( done ) {
+    it('should delete value', function( done ) {
       localforageDriver.clear()
         .then(function() {
           doneTry(done, function() {
@@ -339,7 +322,7 @@ describe('localforageDriver', function() {
           done(error);
         });
     });
-    it('should be silent whan clearing value not saved', function( done ) {
+    it('should be silent whan deleting value not saved', function( done ) {
       localforageDriver.clear()
         .then(function() {
           done();
@@ -350,7 +333,7 @@ describe('localforageDriver', function() {
     });
   });
 
-  describe('#clear sessionstorage==>', function() {
+  describe('#delete sessionstorage==>', function() {
     var localforageDriver;
 
     beforeEach(function( done ) {

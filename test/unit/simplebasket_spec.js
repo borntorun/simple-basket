@@ -184,6 +184,24 @@ describe('simplebasket', function() {
     });
   });
   describe('#remove...==>', function() {
+
+//    it('should remove item by key 1', function() {
+//      var c= 0, v=1000, modNum = Math.floor(Math.random() * (10 - 1)) + 1;
+//      for (var i=1; i<=v; i++){
+//        i % modNum === 0 && (c++);
+//        basket.add({i:i,o: (i % modNum === 0? 9999 : Math.floor(Math.random() * (1000 - 1)) + 1)});
+//      }
+//
+//      console.time("remove");
+//      var obj = basket.remove('o', 9999);
+//      console.timeEnd("remove");
+//
+//      (basket.count()).should.equal(v-c);
+//      (obj.length).should.equal(c);
+//
+//      console.log(obj);
+//    });
+
     it('should remove item by key', function() {
       basket.add(
         {o: 1},
@@ -193,22 +211,33 @@ describe('simplebasket', function() {
       );
       (basket.count()).should.equal(4);
 
+
       var obj = basket.remove('notexists', 1);
+
       (basket.count()).should.equal(4);
       (obj.length).should.equal(0);
 
+
       obj = basket.remove('o', 1);
+
+
       (basket.count()).should.equal(3);
       (obj[0].o).should.equal(1);
 
+
       obj = basket.remove('o', 2);
+
+
       (basket.count()).should.equal(1);
       (obj[0].o).should.equal(2);
       (obj[0].name).should.equal('john');
       (obj[1].o).should.equal(2);
       (obj[1].name).should.equal('mary');
 
+
       obj = basket.remove('x', 3);
+
+
       (basket.count()).should.equal(0);
 
     });
@@ -253,12 +282,18 @@ describe('simplebasket', function() {
 
       (basket.count()).should.equal(4);
 
+      console.time("iterate");
+      var me;
       basket.iterate(function( it, index, items ) {
+        (this).should.equal(basket);
+        me = this;
         items[index].value = it.o;
         it.o *= 2;
       });
-
+      console.timeEnd("iterate");
       var copy = basket.getAll();
+
+      (me.getAll()).should.equal(copy);
 
       (copy[0].o + copy[1].o + copy[2].o + copy[3].o ).should.equal(20);
       (copy[0].value + copy[1].value + copy[2].value + copy[3].value ).should.equal(10);
@@ -314,218 +349,6 @@ describe('simplebasket', function() {
     });
 
   });
-//  describe('#plugins==>', function() {
-//    var called = false;
-//
-//    beforeEach(function() {
-//      basket = window.simplebasket.create();
-//    });
-//
-//    function Dummy() {
-//      this.name = 'dummy';
-//      this.dummyFunction = function() {
-//        called = true;
-//      };
-//    }
-//    function extendDummy(){
-//      var dummyWrapper = window.simplebasket.getBasePluginWrapperInterface('dummy');
-//      dummyWrapper.dummyFunction = function() {
-//        this.dummy.dummyFunction();
-//      };
-//      return window.simplebasket.extend(dummyWrapper);
-//    }
-//    function loseDummy(){
-//      return window.simplebasket.lose('dummy');
-//    }
-//
-//    it('should not allow extend with invalid interface', function() {
-//      function Dummy() {
-//
-//      }
-//      var wrapperObj = new Dummy();
-//
-//      (window.simplebasket.extend(wrapperObj)).should.equal(false);
-//    });
-//    it('should extend with plugin', function() {
-//      extendDummy();
-//
-//      (basket.IDUMMY !== undefined).should.equal(true);
-//      (Object.prototype.hasOwnProperty.call(basket, 'dummyFunction')).should.equal(false);
-//      (basket.dummyFunction !== undefined).should.equal(true);
-//      (isFunction(basket.dummyFunction)).should.equal(true);
-//
-//      basket.dummyFunction();
-//      (called).should.equal(false);
-//
-//      var basket2 = window.simplebasket.create();
-//      basket2.dummyFunction();
-//      (called).should.equal(false);
-//    });
-//    it('should lose plugin', function() {
-//      loseDummy();
-//
-//      (basket.IDUMMY !== undefined).should.equal(false);
-//      (basket.dummyFunction !== undefined).should.equal(false);
-//      (isFunction(basket.dummyFunction)).should.equal(false);
-//
-//    });
-//    it('should allow implement after extend', function() {
-//      extendDummy();
-//
-//      basket.implements(basket.IDUMMY, new Dummy());
-//      (Object.prototype.hasOwnProperty.call(basket, 'dummyFunction')).should.equal(true);
-//      basket.dummyFunction();
-//      (called).should.equal(true);
-//
-//    });
-//    it('should not allow use if instance dows not implements', function() {
-//      called = false;
-//      var basket2 = window.simplebasket.create();
-//      (Object.prototype.hasOwnProperty.call(basket2, 'dummyFunction')).should.equal(false);
-//      basket2.dummyFunction();
-//      (called).should.equal(false);
-//    });
-//    it('should not allow new implementation after lose', function() {
-//      loseDummy();
-//
-//      basket.implements(basket.IDUMMY, new Dummy());
-//
-//      (Object.prototype.hasOwnProperty.call(basket, 'dummyFunction')).should.equal(false);
-//
-//      (basket.dummyFunction===undefined).should.equal(true);
-//
-//    });
-//    it('should not allow extend when already extended', function() {
-//      (extendDummy()).should.equal(true);
-//
-//      (extendDummy()).should.equal(false);
-//
-//    });
-//    it('should not implement when already implemented', function() {
-//      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(true);
-//      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(false);
-//    });
-//    it('should allow implementation by diferent instances', function() {
-//
-//      basket.implements(basket.IDUMMY, new Dummy());
-//      (Object.prototype.hasOwnProperty.call(basket, 'dummyFunction')).should.equal(true);
-//      basket.dummyFunction();
-//      (called).should.equal(true);
-//
-//      called = false;
-//
-//      var basket2 = window.simplebasket.create();
-//      basket2.implements(basket.IDUMMY, new Dummy());
-//      (Object.prototype.hasOwnProperty.call(basket2, 'dummyFunction')).should.equal(true);
-//      basket2.dummyFunction();
-//      (called).should.equal(true);
-//
-//    });
-//    it('should maintain actual implementation by instance after lose', function() {
-//      basket.implements(basket.IDUMMY, new Dummy());
-//      (Object.prototype.hasOwnProperty.call(basket, 'dummyFunction')).should.equal(true);
-//      basket.dummyFunction();
-//      (called).should.equal(true);
-//
-//      loseDummy();
-//
-//      called = false;
-//      basket.dummyFunction();
-//      (called).should.equal(true);
-//    });
-//
-//  });
 
-  ////
-
-  //  var localforageDriver;
-  //  beforeEach(function( done ) {
-  //
-  //    window.localforageDriver.create(window.localforageDriver.STORAGE.LOCALSTORAGE,
-  //      {name: 'livraria', storeName: 'livros', key: 'basketshop'})
-  //      .then(function( value ) {
-  //
-  //        localforageDriver = value;
-  //
-  //        basket = window.simplebasket.create();
-  //
-  //        basket.implements(basket.ISTORAGE, localforageDriver);
-  //
-  //        done();
-  //      });
-  //
-  //  });
-  //  /*beforeEach(function() {
-  //
-  //    //basket.setDriver(basket.ISTORAGE, localforageDriver);
-  //
-  //  });*/
-
-  //  xdescribe('#xxx==>', function() {
-  //    xit('....', function( done ) {
-  //
-  //      basket.add('joao', 'maria', 'josé');
-  //      basket.save()
-  //        .then(function( data ) {
-  //          console.log(data);
-  //        });
-  //      basket.add('isabel');
-  //      var x;
-  //      x = basket.save(function( err, data ) {
-  //        console.log(data);
-  //        console.log(x);
-  //        done();
-  //      }).then(function( data ) {
-  //        console.log('then=', data);
-  //      });
-  //      console.log(x);
-  //
-  //    });
-  //    it('load promise', function( done ) {
-  //      console.log('basket 1=', basket.getAll());
-  //      basket.load()
-  //        .then(function( /*data*/ ) {
-  //          console.log('load basket=', basket.getAll());
-  //          done();
-  //        })
-  //        .catch(function( error ) {
-  //          done(error);
-  //        });
-  //    });
-  //    it('load callback', function( done ) {
-  //      console.log('basket 1=', basket.getAll());
-  //      basket.load(function( err/*, data*/ ) {
-  //        if ( err ) {
-  //          console.log('callback load error=', err);
-  //        }
-  //        else {
-  //          console.log('callback load basket=', basket.getAll());
-  //        }
-  //        done();
-  //      });
-  //    });
-  //    xit('delete promise', function( done ) {
-  //      console.log('basket 1=', basket.getAll());
-  //      basket.load()
-  //        .then(function( data ) {
-  //          console.log('load data 1=', data);
-  //          console.log('load basket 1=', basket.getAll());
-  //          return basket.clear();
-  //        })
-  //        .then(function( data ) {
-  //          console.log('delete data=', data);
-  //          return basket.load();
-  //        })
-  //        .then(function( data ) {
-  //          console.log('load data 2=', data);
-  //          console.log('load basket 2=', basket.getAll());
-  //          done();
-  //        })
-  //        .catch(function( error ) {
-  //          done(error);
-  //        });
-  //    });
-  //
-  //  });
 
 });

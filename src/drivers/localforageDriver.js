@@ -1,8 +1,13 @@
-/*jshint -W098 */
+/**
+ * localforageDriver.js
+ * localforage (https://github.com/mozilla/localForage) driver for use with
+ *  storage plugin wrapper (https://github.com/borntorun/simple-basket/blob/master/src/plugin-wrapper/storage.js) to use with
+ *    simplebasket (https://github.com/borntorun/simple-basket)
+ */
 (function( global, factory ) {
   'use strict';
   if ( typeof define === 'function' && define.amd ) {
-    define('localforageDriver', ['localforage', 'sessionStorageWrapper'], function( localforage, sessionStorageWrapper ) {
+    define(['localforage', 'sessionStorageWrapper'], function( localforage, sessionStorageWrapper ) {
       factory(localforage, sessionStorageWrapper);
     });
   }

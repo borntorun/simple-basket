@@ -1,3 +1,7 @@
+/**
+ * simplebasket-extend.js
+ * Allows simplebasket to accept plugins to extend itself
+ */
 /*jshint -W098 */
 (function( global, factory ) {
   'use strict';
@@ -30,13 +34,19 @@
   //holds plugin interfaces definition
   var pluginInterfaceDefinition = {};
 
-  Basket.prototype.implements = function( oInterface, driver ) {
+  /**
+   * Allows a Basket to implement a driver for the plugin-wrapper interface
+   * @param wrapper - the plugin-wrapper pluged to simplebasket
+   * @param driver - the implementation object
+   * @returns {boolean}
+   */
+  Basket.prototype.implements = function( wrapper, driver ) {
 
     if ( this instanceof Basket === false ) {
       return false;
     }
     //test if is invalid interface
-    if ( !pluginInterfaceType[oInterface] ) {
+    if ( !pluginInterfaceType[wrapper] ) {
       return false;
     }
     //test if is invalid driver.name
@@ -44,10 +54,10 @@
       return false;
     }
     //instance already implements interface
-    if ( this[oInterface] ) {
+    if ( this[wrapper] ) {
       return false;
     }
-    var Idefinition = pluginInterfaceDefinition[oInterface];
+    var Idefinition = pluginInterfaceDefinition[wrapper];
 
     //verifies driver has keys from definition
     for ( var key in Idefinition ) {
@@ -60,7 +70,7 @@
     }
     //set a key=interface type ex: instance.storage
     //just for mark that the instance already implements the interface
-    this[oInterface] = driver;
+    this[wrapper] = driver;
 
     var self = this;
 
@@ -103,6 +113,11 @@
     }
   }
 
+  /**
+   * Plug a plugin-wrapper
+   * @param obj a BasePluginWrapper to plug (see example: https://github.com/borntorun/simple-basket/blob/master/src/plugin-wrapper/storage.js)
+   * @returns {boolean}
+   */
   simplebasket.plug = function( obj ) {
     if ( !(obj instanceof BasePluginWrapper) ) {
       return false;
@@ -124,6 +139,10 @@
 
     return true;
   };
+  /**
+   * Remove a plugged object
+   * @param name
+   */
   simplebasket.lose = function( name ) {
     var obj = pluginInterfaceDefinition[name];
     for ( var key in obj ) {
@@ -135,6 +154,11 @@
     delete Basket.prototype['I' + name.toUpperCase()];
     delete pluginInterfaceDefinition[name];
   };
+  /**
+   * Get an instance for base plugin
+   * @param name
+   * @returns {BasePluginWrapper}
+   */
   simplebasket.getBasePluginWrapper = function( name ) {
     return new BasePluginWrapper(name);
   };

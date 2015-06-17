@@ -1,3 +1,8 @@
+/**
+ * simplebasket.js
+ * A simple javascript basket for values.
+ * https://github.com/borntorun/simple-basket
+ */
 /*jshint -W098 */
 (function( global, factory ) {
   'use strict';
@@ -7,7 +12,7 @@
     });
   }
   else if ( typeof exports === 'object' ) {
-    module.exports = factory(require('_'));
+    module.exports = factory(require('lodash'));
   }
   else {
     global.simplebasket = factory(global._);
@@ -59,7 +64,7 @@
      * a clone (deep copy) of basket items is made
      * @returns {Array}
      */
-    this.getClone = function( a ) {
+    this.getClone = function() {
       return _.clone(items, true);
     };
     /**
@@ -76,9 +81,21 @@
      * @returns {Array}
      */
     this.remove = function( key, value ) {
-      return _.remove(items, function( item ) {
-        return item[key] && item[key] === value;
-      });
+      //      return _.remove(items, function( item ) {
+      //        return item[key] && item[key] === value;
+      //      });
+      var result = [],
+        leng = items.length;
+      for ( var i = 0; i < leng; ) {
+        if ( items[i][key] && items[i][key] === value ) {
+          result.push(items.splice(i, 1)[0]);
+          leng--;
+        }
+        else {
+          i++;
+        }
+      }
+      return result;
     };
     /**
      * Remove one item by position
@@ -88,7 +105,8 @@
     this.removeAt = function( index ) {
       //to not shift to last position when negative index
       index = index < 0 ? items.length : index;
-      return _(items).splice(index, 1).value();
+      //return _(items).splice(index, 1).value();
+      return items.splice(index, 1);//.value();
     };
     /**
      * Removes all items in the basket (Clear the basket)
@@ -106,7 +124,13 @@
       if ( {}.toString.call(callback) !== '[object Function]' ) {
         return;
       }
-      _.forEach(items, callback, this);
+      //_.forEach(items, callback, this);
+
+      var leng = items.length;
+      for (var i = 0; i < leng; i++) {
+        callback.call(this, items[i], i, items);
+      }
+
     };
     /**
      * Returns the number of items in the basket
@@ -132,10 +156,12 @@
 
   return objExports;
 
-
   function isArray( obj ) {
     return Object.prototype.toString.call(obj) === '[object Array]';
   }
 
 });
+
+
+
 

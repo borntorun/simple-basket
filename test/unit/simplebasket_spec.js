@@ -183,23 +183,6 @@ describe('simplebasket', function() {
   });
   describe('#remove...==>', function() {
 
-    //    it('should remove item by key 1', function() {
-    //      var c= 0, v=1000, modNum = Math.floor(Math.random() * (10 - 1)) + 1;
-    //      for (var i=1; i<=v; i++){
-    //        i % modNum === 0 && (c++);
-    //        basket.add({i:i,o: (i % modNum === 0? 9999 : Math.floor(Math.random() * (1000 - 1)) + 1)});
-    //      }
-    //
-    //      console.time("remove");
-    //      var obj = basket.remove('o', 9999);
-    //      console.timeEnd("remove");
-    //
-    //      (basket.count()).should.equal(v-c);
-    //      (obj.length).should.equal(c);
-    //
-    //      console.log(obj);
-    //    });
-
     it('should remove item by key', function() {
       basket.add(
         {o: 1},
@@ -273,15 +256,15 @@ describe('simplebasket', function() {
 
       (basket.count()).should.equal(4);
 
-      console.time('iterate');
-      var me;
+      /*console.time('iterate');*/
+      var me = null;
       basket.iterate(function( it, index, items ) {
         (this).should.equal(basket);
         me = this;
         items[index].value = it.o;
         it.o *= 2;
       });
-      console.timeEnd('iterate');
+      /*console.timeEnd('iterate');*/
       var copy = basket.getAll();
 
       (me.getAll()).should.equal(copy);

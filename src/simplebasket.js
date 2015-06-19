@@ -30,6 +30,7 @@
 
     /**
      * Adds one or more item to basket
+     * @param ...*
      * @returns {*} returns the basket instance
      */
     this.add = function() {
@@ -75,7 +76,7 @@
       return items;
     };
     /**
-     * Remove am item by a reference key
+     * Remove an item by a reference key
      * @param key
      * @param value
      * @returns {Array}
@@ -113,11 +114,13 @@
      * @returns {*} returns the basket instance
      */
     this.removeAll = function() {
-      items = [];
+      //items = [];
+      //seems this has better performance
+      items.length = 0;
       return this;
     };
     /**
-     * Iterate each item calling a function with its values
+     * Iterate the basket calling a function for each item
      * @param callback
      */
     this.iterate = function( callback ) {

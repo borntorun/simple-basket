@@ -280,8 +280,7 @@
     }
 
     function isHashObject( obj ) {
-      var v = {};
-      return (!!obj && typeof obj === 'object' && (obj.constructor === undefined || obj.constructor === v.constructor));
+      return (!!obj && typeof obj === 'object' && (obj.constructor === undefined || obj.constructor === {}.constructor));
     }
   }
 

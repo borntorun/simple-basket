@@ -5,14 +5,24 @@
     "Joao Carvalho <jmmtcarvalho@gmail.com>"
   ],
   "description": "A simple javascript basket for values",
+  "main": "dist/simplebasket.js",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
   "keywords": [
     "javascript",
     "basket",
     "store",
     "shopping"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/borntorun/simple-basket.git"
+  },
   "license": "MIT",
-  "private": true,
+  "private": false,
   "ignore": [
     "**/.*",
     "node_modules",

@@ -36,12 +36,11 @@ describe('storage wrapper plugin', function() {
     it('should be extended with storage wrapper', function() {
       basket.save();
 
-
-      (Object.prototype.hasOwnProperty.call(Object.getPrototypeOf(basket), 'ISTORAGE')).should.equal(true);
-//      (Object.prototype.hasOwnProperty.call(basket.__proto__, 'ISTORAGE')).should.equal(true);
-//      (Object.prototype.hasOwnProperty.call(basket.__proto__, 'save')).should.equal(true);
-//      (Object.prototype.hasOwnProperty.call(basket.__proto__, 'load')).should.equal(true);
-//      (Object.prototype.hasOwnProperty.call(basket.__proto__, 'clear')).should.equal(true);
+      var oproto = Object.getPrototypeOf(basket);
+      (Object.prototype.hasOwnProperty.call(oproto, 'ISTORAGE')).should.equal(true);
+      (Object.prototype.hasOwnProperty.call(oproto, 'save')).should.equal(true);
+      (Object.prototype.hasOwnProperty.call(oproto, 'load')).should.equal(true);
+      (Object.prototype.hasOwnProperty.call(oproto, 'clear')).should.equal(true);
 
     });
   });
@@ -130,4 +129,5 @@ describe('storage wrapper plugin', function() {
 
 
   });
+
 });

@@ -1,8 +1,8 @@
 /**
  * localforageDriver.js
- * localforage (https://github.com/mozilla/localForage) driver for use with
- *  storage plugin wrapper (https://github.com/borntorun/simple-basket/blob/master/src/plugin-wrapper/storage.js) to use with
- *    simplebasket (https://github.com/borntorun/simple-basket)
+ * localforage (https://github.com/mozilla/localForage) driver
+ * Supports all internal drivers in localforage plus:
+ * - sessionStorageWrapper (https://github.com/thgreasi/localForage-sessionStorageWrapper)
  */
 (function( global, factory ) {
   'use strict';

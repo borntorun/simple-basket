@@ -26,17 +26,10 @@
   var iObj = simplebasket.getBasePluginWrapper('storage');
 
   iObj.save = function( callback ) {
-//    if ( !hasProp(this, iObj.type)) {
-//      return;
-//    }
     return this[iObj.type].save(this.getClone(), callback);
   };
 
   iObj.load = function( callback ) {
-//    if ( !hasProp(this, iObj.type)) {
-//      return;
-//    }
-
     var self = this;
 
     var thePromise = new Promise(function( resolve, reject ) {
@@ -55,9 +48,6 @@
   };
 
   iObj.clear = function( callback ) {
-//    if ( !hasProp(this, iObj.type) ) {
-//      return;
-//    }
     return this[iObj.type].clear(callback);
   };
 

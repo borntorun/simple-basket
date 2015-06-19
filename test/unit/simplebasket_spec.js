@@ -24,8 +24,6 @@ describe('simplebasket', function() {
     JSON.stringify = stringify;
   });
 
-
-
   beforeEach(function() {
     basket = window.simplebasket.create();
   });
@@ -185,22 +183,22 @@ describe('simplebasket', function() {
   });
   describe('#remove...==>', function() {
 
-//    it('should remove item by key 1', function() {
-//      var c= 0, v=1000, modNum = Math.floor(Math.random() * (10 - 1)) + 1;
-//      for (var i=1; i<=v; i++){
-//        i % modNum === 0 && (c++);
-//        basket.add({i:i,o: (i % modNum === 0? 9999 : Math.floor(Math.random() * (1000 - 1)) + 1)});
-//      }
-//
-//      console.time("remove");
-//      var obj = basket.remove('o', 9999);
-//      console.timeEnd("remove");
-//
-//      (basket.count()).should.equal(v-c);
-//      (obj.length).should.equal(c);
-//
-//      console.log(obj);
-//    });
+    //    it('should remove item by key 1', function() {
+    //      var c= 0, v=1000, modNum = Math.floor(Math.random() * (10 - 1)) + 1;
+    //      for (var i=1; i<=v; i++){
+    //        i % modNum === 0 && (c++);
+    //        basket.add({i:i,o: (i % modNum === 0? 9999 : Math.floor(Math.random() * (1000 - 1)) + 1)});
+    //      }
+    //
+    //      console.time("remove");
+    //      var obj = basket.remove('o', 9999);
+    //      console.timeEnd("remove");
+    //
+    //      (basket.count()).should.equal(v-c);
+    //      (obj.length).should.equal(c);
+    //
+    //      console.log(obj);
+    //    });
 
     it('should remove item by key', function() {
       basket.add(
@@ -211,22 +209,17 @@ describe('simplebasket', function() {
       );
       (basket.count()).should.equal(4);
 
-
       var obj = basket.remove('notexists', 1);
 
       (basket.count()).should.equal(4);
       (obj.length).should.equal(0);
 
-
       obj = basket.remove('o', 1);
-
 
       (basket.count()).should.equal(3);
       (obj[0].o).should.equal(1);
 
-
       obj = basket.remove('o', 2);
-
 
       (basket.count()).should.equal(1);
       (obj[0].o).should.equal(2);
@@ -234,9 +227,7 @@ describe('simplebasket', function() {
       (obj[1].o).should.equal(2);
       (obj[1].name).should.equal('mary');
 
-
       obj = basket.remove('x', 3);
-
 
       (basket.count()).should.equal(0);
 
@@ -282,7 +273,7 @@ describe('simplebasket', function() {
 
       (basket.count()).should.equal(4);
 
-      console.time("iterate");
+      console.time('iterate');
       var me;
       basket.iterate(function( it, index, items ) {
         (this).should.equal(basket);
@@ -290,7 +281,7 @@ describe('simplebasket', function() {
         items[index].value = it.o;
         it.o *= 2;
       });
-      console.timeEnd("iterate");
+      console.timeEnd('iterate');
       var copy = basket.getAll();
 
       (me.getAll()).should.equal(copy);
@@ -349,6 +340,5 @@ describe('simplebasket', function() {
     });
 
   });
-
 
 });

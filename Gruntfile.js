@@ -18,7 +18,14 @@ module.exports = function( grunt ) {
       ' * <%= pkg.name %> v%%VERSION%%',
       ' * <%= pkg.homepage %>',
       ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
-      ' */\n\n'
+      ' */\n'
+    ].join('\n'),
+    bannerextend: [
+      '/*!',
+      ' * <%= pkg.name %>-extend v%%VERSION%%',
+      ' * <%= pkg.homepage %>',
+      ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
+      ' */\n'
     ].join('\n'),
     clean: {
       dist: {
@@ -42,23 +49,18 @@ module.exports = function( grunt ) {
         path: '<%= buildDir %>'
       }
     },
-    /*ngAnnotate: {
-      dist: {
-        files: [
-          {
-            expand: true,
-            src: '<%= buildDir %>/<%= pkg.name %>.js'
-          }
-        ]
-      }
-    },*/
     concat: {
       options: {
         separator: ';'
       },
       dist: {
-        src: ['src/**/*.js'],
-        dest: '<%= buildDir %>/<%= pkg.name %>.js'
+        files: {
+          '<%= buildDir %>/<%= pkg.namedist %>.js': ['src/<%= pkg.namedist %>.js'],
+          '<%= buildDir %>/<%= pkg.namedist %>-extend.js': ['src/<%= pkg.namedist %>-extend.js'],
+          '<%= buildDir %>/<%= pkg.namedist %>-bundle.js': ['src/<%= pkg.namedist %>.js', 'src/<%= pkg.namedist %>-extend.js'],
+          '<%= buildDir %>/plugins/storage.js': ['src/plugin-wrapper/storage.js'],
+          '<%= buildDir %>/plugins/drivers/localforageDriver.js': ['src/drivers/localforageDriver.js']
+        }
       }
     },
     jshint: {
@@ -71,18 +73,59 @@ module.exports = function( grunt ) {
     },
     uglify: {
       options: {
-        banner: '<%= banner %>',
-        footer: '\n'
+        footer: '\n',
+        mangle: true,
+        beautify: false,
+        compress: true,
+        indent_level: 0
       },
-      build: {
+      buildpkg: {
         options: {
-          mangle: true,
-          beautify: false,
-          compress: true,
-          indent_level: 0
+          banner: '<%= banner %>'
         },
         files: {
-          '<%= buildDir %>/<%= pkg.name %>.min.js': ['<%= buildDir %>/<%= pkg.name %>.js']
+          '<%= buildDir %>/<%= pkg.namedist %>.min.js': ['<%= buildDir %>/<%= pkg.namedist %>.js'],
+          '<%= buildDir %>/<%= pkg.namedist %>-bundle.min.js': ['<%= buildDir %>/<%= pkg.namedist %>-bundle.js']
+        }
+      },
+      buildextend: {
+        options: {
+          banner: '<%= bannerextend %>'
+        },
+        files: {
+          '<%= buildDir %>/<%= pkg.namedist %>-extend.min.js': ['<%= buildDir %>/<%= pkg.namedist %>-extend.js']
+        }
+      },
+      buildpluginstorage: {
+        options: {
+          banner: [
+            '/*!',
+            ' * storage.js',
+            ' * storage plugin wrapper to use with',
+            ' * simplebasket (https://github.com/borntorun/simple-basket)',
+            ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
+            ' */\n'
+          ].join('\n')
+        },
+        files: {
+          '<%= buildDir %>/plugins/storage.min.js': ['<%= buildDir %>/plugins/storage.js']
+        }
+      },
+      builddriver: {
+        options: {
+          banner: [
+            '/*!',
+            ' * localforageDriver.js',
+            ' * localforage (https://github.com/mozilla/localForage) driver',
+            ' * Supports all internal drivers in localforage plus:',
+            ' * - sessionStorageWrapper (https://github.com/thgreasi/localForage-sessionStorageWrapper)',
+            ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
+            ' */\n'
+          ].join('\n')
+
+        },
+        files: {
+          '<%= buildDir %>/plugins/drivers/localforageDriver.min.js': ['<%= buildDir %>/plugins/drivers/localforageDriver.js']
         }
       }
     },
@@ -98,8 +141,6 @@ module.exports = function( grunt ) {
        */
       remote: {
         command: function( ok ) {
-
-          //return (ok && 'gruntlistremotes=$(git remote);printf "$gruntlistremotes"') || '$(exit 1)';
           return ok === 'true' ?
             'gruntlistremotes=$(git remote);printf "$gruntlistremotes"'
             :
@@ -221,7 +262,7 @@ module.exports = function( grunt ) {
     mocha: {
       unit: {
         options: {
-          logErrors:true,
+          logErrors: true,
           urls: [
             'http://localhost:8888/test/unit/simplebasket.html',
             'http://localhost:8888/test/unit/localforagedriver.html',
@@ -230,49 +271,7 @@ module.exports = function( grunt ) {
         }
       }
     },
-    /**
-     * e2e tests with protractor
-     */
-    /*protractor_webdriver: {
-      update: {
-        options: {
-          path: './node_modules/.bin/',
-          command: 'webdriver-manager update --standalone'
-        }
-      },
-      continuous: {
-        options: {
-          keepAlive: true,
-          path: './node_modules/.bin/',
-          command: 'webdriver-manager start --seleniumPort 4444'
-        }
-      },
-      single: {
-        options: {
-          keepAlive: false,
-          path: './node_modules/.bin/',
-          command: 'webdriver-manager start --seleniumPort 4444'
-        }
-      }
-    },
-    protractor: {
-      options: {
-        configFile: "test/e2e/local/protractor.js",
-        noColor: false,
-        debug: false,
-        args: { }
-      },
-      single: {
-        options: {
-          keepAlive: false
-        }
-      },
-      continuous: {
-        options: {
-          keepAlive: true
-        }
-      }
-    },*/
+
     /**
      * Local Web server
      */
@@ -281,9 +280,9 @@ module.exports = function( grunt ) {
         base: '.',
         hostname: '*',
         port: 8888,
-        middleware: function(connect) {
+        middleware: function( connect ) {
           return [
-            function(req, res, next) {
+            function( req, res, next ) {
               res.setHeader('Access-Control-Allow-Origin',
                 '*');
               res.setHeader('Access-Control-Allow-Methods',
@@ -430,7 +429,7 @@ module.exports = function( grunt ) {
   /**
    * Build Task
    */
-  grunt.registerTask('build', ['jshint', 'concat', /*'ngAnnotate',*/ 'uglify', 'sed:version']);
+  grunt.registerTask('build', ['jshint', 'concat', 'uglify', 'sed:version']);
   /**
    * Default
    */

@@ -28,7 +28,8 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "Gruntfile.js"
   ],
   "devDependencies": {
     "mocha": "~2.2.5",

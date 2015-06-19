@@ -23,6 +23,12 @@ How to use
 $ bower install simple-basket
 ```
 
+* Install with npm
+
+```
+$ npm install simple-basket
+```
+
 * or get the javascript in dist folder: simplebasket.js
 
 ## Use

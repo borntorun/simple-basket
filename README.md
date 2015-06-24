@@ -69,6 +69,7 @@ console.log(basket.getall()); //[1, 2, 3, 4, 5]
 * removeAll() - Removes all items in the basket (Clear the basket)
 * iterate() - Iterate the basket calling a function for each item 
 * count() - Returns the number of items in the basket
+* find() - Find values in basket
 
 ## Extending the basket
 

@@ -285,6 +285,120 @@ describe('simplebasket', function() {
       (copy[0].o + copy[1].o + copy[2].o + copy[3].o ).should.equal(10);
     });
   });
+  describe('#find==>', function() {
+    function Obj() {
+      this.o = 1;
+    }
+    var result, obj;
+
+
+    beforeEach(function() {
+      basket = window.simplebasket.create();
+
+      obj = new Obj();
+
+      basket.add(null, 1, 2, 3, 1,
+        {o: undefined, name: 'und'},
+        {o: null, name: 'null'},
+        {o: 1},
+        {name: 'joao', o: 1},
+        {o: 2},
+        new Date(2001, 1, 1), /^a/ig, 12.99, false, 10,
+        {o: true, name: 'true'},
+        {name: 'x', o: new Date(2001, 1, 1)},
+        obj,
+        undefined,
+        'joao',
+        new RegExp('^a', 'gi')
+      );
+    });
+    it('should find Number in basket', function() {
+
+      result = basket.find(1);
+      (result.length).should.equal(2);
+      result = basket.find({key: 'o', value: 1});
+      (result.length).should.equal(3);
+    });
+    it('should find String in basket', function() {
+      result = basket.find('joao');
+      (result.length).should.equal(1);
+      result = basket.find({key: 'name', value: 'joao'});
+      (result.length).should.equal(1);
+    });
+    it('should find Number in basket', function() {
+      result = basket.find(false);
+      (result.length).should.equal(1);
+      result = basket.find({key: 'o', value: true});
+      (result.length).should.equal(1);
+      result = basket.find(12.99);
+      (result.length).should.equal(1);
+    });
+    it('should find RegExp in basket', function() {
+      result = basket.find(/^a/ig);
+      (result.length).should.equal(2);
+    });
+    it('should find Object in basket', function() {
+      result = basket.find(obj);
+      (result.length).should.equal(1);
+      (result[0]).should.equal(obj);
+    });
+    it('should find Date in basket', function() {
+      result = basket.find(new Date(2001, 1, 1));
+      (result.length).should.equal(1);
+      result = basket.find({key: 'o', value: new Date(2001, 1, 1)});
+      (result.length).should.equal(1);
+    });
+    it('should not find with invalid search object', function() {
+      result = basket.find({notkey: 'o'});
+      (result.length).should.equal(0);
+    });
+    it('should find with key/value=undefined in basket', function() {
+
+      //we are in phantomjs v.1.9.x do not run this test see:https://github.com/ariya/phantomjs/issues/11722
+      if (Object.prototype.toString.call(undefined) === '[object DOMWindow]') {return;}
+
+      result = basket.find({key: 'o'});
+      (result.length).should.equal(1);
+      result = basket.find(undefined);
+      (result.length).should.equal(1);
+
+    });
+    it('should not find if not exists key', function() {
+      result = basket.find({key: 'xxx'});
+      (result.length).should.equal(0);
+    });
+    it('should find null in basket', function() {
+      //we are in phantomjs v.1.9.x do not run this test see:https://github.com/ariya/phantomjs/issues/11722
+      if (Object.prototype.toString.call(undefined) === '[object DOMWindow]') {return;}
+
+      result = basket.find({key: 'o', value: null});
+      (result.length).should.equal(1);
+      result = basket.find(null);
+      (result.length).should.equal(1);
+
+    });
+    it('should call callback with result', function( done ) {
+      result = basket.find(obj, function( err, result ) {
+        (err === null).should.equal(true);
+        (result.length).should.equal(1);
+        (result[0]).should.equal(obj);
+        done();
+      });
+    });
+    it('should call callback with error if not found', function( done ) {
+      result = basket.find('sdsdsd', function( err, result ) {
+        (err === null).should.equal(false);
+        (result.length).should.equal(0);
+        done();
+      });
+    });
+    it('should call callback with this obj', function( done ) {
+      result = basket.find(obj, function() {
+        (this).should.equal(obj);
+        done();
+      }, obj);
+    });
+  });
   describe('#other==>', function() {
 
     it('should set an array of items to the basket', function() {

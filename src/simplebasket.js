@@ -20,6 +20,30 @@
 })(this, function( _ ) {
   'use strict';
 
+  //**********************************************************
+  //Code taken from https://github.com/traviskaufman/cycloneJS
+  var __call__ = Function.prototype.call;
+  var _toString = _bind(__call__, {}.toString);
+  var _hasOwn = _bind(__call__, {}.hasOwnProperty);
+
+  // Many environments seem to not support ES5's native bind as of now.
+  // Because of this, we'll use our own implementation.
+  function _bind( fn, ctx ) {
+    // Get a locally-scoped version of _slice here.
+    var _slice = [].slice;
+    // Like native bind, an arbitrary amount of arguments can be passed into
+    // this function which will automatically be bound to it whenever it's
+    // called.
+    var boundArgs = _slice.call(arguments, 2);
+
+    return function() {
+      return fn.apply(ctx, boundArgs.concat(_slice.call(arguments)));
+    };
+  }
+
+  //End: taken from https://github.com/traviskaufman/cycloneJS
+  //**********************************************************
+
   /**
    * Basket
    * @constructor
@@ -130,7 +154,7 @@
       //_.forEach(items, callback, this);
 
       var leng = items.length;
-      for (var i = 0; i < leng; i++) {
+      for ( var i = 0; i < leng; i++ ) {
         callback.call(this, items[i], i, items);
       }
 
@@ -141,6 +165,75 @@
      */
     this.count = function() {
       return items.length;
+    };
+    /**
+     * Find values in basket and call callback with result values[] found
+     * @param search
+     * @param callback
+     * @param callbackthis
+     * @returns {Array}
+     */
+    this.find = function( search, callback, callbackthis ) {
+      var result = [];
+
+      function _addIfequal( one, two, item ) {
+        //http://stackoverflow.com/questions/10776600/testing-for-equality-of-regular-expressions
+        function isRegexEqual( x, y ) {
+          return (x instanceof RegExp) &&
+            (y instanceof RegExp) &&
+            (x.source === y.source) &&
+            (x.global === y.global) &&
+            (x.ignoreCase === y.ignoreCase) &&
+            (x.multiline === y.multiline) &&
+            (x.sticky === y.sticky);
+        }
+
+        var first = !!one ? one.valueOf() : one,
+          second = !!two ? two.valueOf() : two;
+
+        (isRegexEqual(one, two) || first === second) && (result.push(item));
+      }
+
+      function _isTypeOk( value ) {
+        var oType = _toString(value);
+        //arrays are not supported in find...
+        return oType === '[object String]' ||
+          oType === '[object Number]' ||
+          oType === '[object Boolean]' ||
+          oType === '[object Date]' ||
+          oType === '[object Object]' ||
+          oType === '[object RegExp]' ||
+          oType === '[object Undefined]' ||
+          oType === '[object Null]';
+      }
+
+      function _search() {
+        var leng = items.length,
+          isKeyValueSearch = (typeof search === 'object' && (!!search && _hasOwn(search, 'key'))),
+          value;
+
+        value = isKeyValueSearch === false ? search : search.value;
+        if ( _isTypeOk(value) ) {
+          for ( var i = 0; i < leng; i++ ) {
+            var it = items[i], valueIn = items[i];
+            if ( isKeyValueSearch && !!it && _hasOwn(it, search.key) ) {
+              valueIn = it[search.key];
+              _addIfequal(valueIn, value, it);
+            }
+            isKeyValueSearch === false && (_addIfequal(valueIn, value, it));
+          }
+        }
+      }
+
+      _search();
+
+      if ( isFunction(callback) ) {
+        setTimeout(function(){
+          callback.call(callbackthis, result.length > 0 ? null : new Error('not found'), result);
+        });
+      }
+
+      return result;
     };
   }
 
@@ -161,6 +254,10 @@
 
   function isArray( obj ) {
     return Object.prototype.toString.call(obj) === '[object Array]';
+  }
+
+  function isFunction( obj ) {
+    return {}.toString.call(obj) === '[object Function]';
   }
 
 });

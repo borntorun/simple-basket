@@ -28,6 +28,37 @@ describe('simplebasket', function() {
     basket = window.simplebasket.create();
   });
 
+  describe('#create==>', function() {
+
+    function useCaseOptionsUndefined(val) {
+      var b = window.simplebasket.create(val);
+      (b.getOptions().uniqueKey === undefined).should.equal(true);
+    }
+
+    it('should create with no options', function() {
+      var b = window.simplebasket.create();
+      (b.getOptions().uniqueKey === undefined).should.equal(true);
+    });
+    it('should create but silent invalid options', function() {
+      useCaseOptionsUndefined({invalid:'test'});
+      useCaseOptionsUndefined(1);
+      useCaseOptionsUndefined(true);
+      useCaseOptionsUndefined({});
+      useCaseOptionsUndefined('test');
+      useCaseOptionsUndefined(null);
+      useCaseOptionsUndefined(undefined);
+      useCaseOptionsUndefined({uniqueKey:{}});
+      useCaseOptionsUndefined({uniqueKey:1});
+      useCaseOptionsUndefined({uniqueKey:true});
+      useCaseOptionsUndefined({uniqueKey:null});
+      useCaseOptionsUndefined({uniqueKey:undefined});
+    });
+    it('should create with valid option', function() {
+      var b = window.simplebasket.create({uniqueKey: 'key'});
+      (b.getOptions().uniqueKey === undefined).should.equal(false);
+      (b.getOptions().uniqueKey).should.equal('key');
+    });
+  });
   describe('#add==>', function() {
     it('should add 1 item to basket', function() {
       basket.add({o: 1});
@@ -38,6 +69,27 @@ describe('simplebasket', function() {
       basket.add({o: 2});
       basket.add({o: 3});
       (basket.count()).should.equal(3);
+    });
+    it('should not add duplicate items if uniqueKey is set', function() {
+      var b = window.simplebasket.create({uniqueKey: 'o'});
+      var itemkey = '0101010101';
+      b.add({o: itemkey, item: 1});
+      (b.count()).should.equal(1);
+
+      b.add({o: itemkey, item: 2});
+      (b.count()).should.equal(1);
+      (b.getAll()[0].item).should.equal(1);
+
+      b.add({o: itemkey, item: 3},{o: itemkey, item: 4},{o: itemkey, item: 5});
+      (b.count()).should.equal(1);
+      (b.getAll()[0].item).should.equal(1);
+
+      b = window.simplebasket.create({uniqueKey: 'o'});
+      b.add([{o: itemkey, item: 1},{o: 100, item: 2},{o: itemkey, item: 3}]);
+      (b.count()).should.equal(2);
+      (b.getAll()[0].item).should.equal(1);
+      (b.getAll()[1].item).should.equal(2);
+
     });
   });
   describe('#get...==>', function() {
@@ -289,8 +341,8 @@ describe('simplebasket', function() {
     function Obj() {
       this.o = 1;
     }
-    var result, obj;
 
+    var result, obj;
 
     beforeEach(function() {
       basket = window.simplebasket.create();
@@ -318,6 +370,8 @@ describe('simplebasket', function() {
       (result.length).should.equal(2);
       result = basket.find({key: 'o', value: 1});
       (result.length).should.equal(3);
+      result = basket.find(12.99);
+      (result.length).should.equal(1);
     });
     it('should find String in basket', function() {
       result = basket.find('joao');
@@ -325,18 +379,16 @@ describe('simplebasket', function() {
       result = basket.find({key: 'name', value: 'joao'});
       (result.length).should.equal(1);
     });
-    it('should find Number in basket', function() {
+    it('should find Boolean in basket', function() {
       result = basket.find(false);
       (result.length).should.equal(1);
       result = basket.find({key: 'o', value: true});
       (result.length).should.equal(1);
-      result = basket.find(12.99);
-      (result.length).should.equal(1);
     });
-    it('should find RegExp in basket', function() {
+    /*it('should find RegExp in basket', function() {
       result = basket.find(/^a/ig);
       (result.length).should.equal(2);
-    });
+    });*/
     it('should find Object in basket', function() {
       result = basket.find(obj);
       (result.length).should.equal(1);
@@ -355,7 +407,9 @@ describe('simplebasket', function() {
     it('should find with key/value=undefined in basket', function() {
 
       //we are in phantomjs v.1.9.x do not run this test see:https://github.com/ariya/phantomjs/issues/11722
-      if (Object.prototype.toString.call(undefined) === '[object DOMWindow]') {return;}
+      if ( Object.prototype.toString.call(undefined) === '[object DOMWindow]' ) {
+        return;
+      }
 
       result = basket.find({key: 'o'});
       (result.length).should.equal(1);
@@ -369,7 +423,9 @@ describe('simplebasket', function() {
     });
     it('should find null in basket', function() {
       //we are in phantomjs v.1.9.x do not run this test see:https://github.com/ariya/phantomjs/issues/11722
-      if (Object.prototype.toString.call(undefined) === '[object DOMWindow]') {return;}
+      if ( Object.prototype.toString.call(undefined) === '[object DOMWindow]' ) {
+        return;
+      }
 
       result = basket.find({key: 'o', value: null});
       (result.length).should.equal(1);

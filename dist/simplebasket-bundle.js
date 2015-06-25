@@ -20,13 +20,42 @@
 })(this, function( _ ) {
   'use strict';
 
+  //**********************************************************
+  //Code taken from https://github.com/traviskaufman/cycloneJS
+  var __call__ = Function.prototype.call;
+  var _toString = _bind(__call__, {}.toString);
+  var _hasOwn = _bind(__call__, {}.hasOwnProperty);
+
+  // Many environments seem to not support ES5's native bind as of now.
+  // Because of this, we'll use our own implementation.
+  function _bind( fn, ctx ) {
+    // Get a locally-scoped version of _slice here.
+    var _slice = [].slice;
+    // Like native bind, an arbitrary amount of arguments can be passed into
+    // this function which will automatically be bound to it whenever it's
+    // called.
+    var boundArgs = _slice.call(arguments, 2);
+
+    return function() {
+      return fn.apply(ctx, boundArgs.concat(_slice.call(arguments)));
+    };
+  }
+
+  //End: taken from https://github.com/traviskaufman/cycloneJS
+  //**********************************************************
+
+  var OPTIONS = {
+    UNIQUEKEY: 'uniqueKey'
+  };
+
   /**
    * Basket
    * @constructor
    */
-  function Basket() {
+  function Basket( opt ) {
     //basket items
-    var items = [];
+    var items = [],
+      options = opt || {};
 
     /**
      * Adds one or more item to basket
@@ -43,9 +72,16 @@
         _array = [].slice.call(arguments);
       }
 
+      var uniqueKey = options[OPTIONS.UNIQUEKEY];
+
       _array.forEach(function( item ) {
+        if ( uniqueKey && typeof item === 'object' && _hasOwn(item, uniqueKey) ) {
+          if ( this.find({key: uniqueKey, value: item[uniqueKey]}).length ) {
+            return;
+          }
+        }
         items.push(item);
-      });
+      }, this);
       return this;
     };
     /**
@@ -124,13 +160,13 @@
      * @param callback
      */
     this.iterate = function( callback ) {
-      if ( {}.toString.call(callback) !== '[object Function]' ) {
+      if ( !isFunction(callback) ) {
         return;
       }
       //_.forEach(items, callback, this);
 
       var leng = items.length;
-      for (var i = 0; i < leng; i++) {
+      for ( var i = 0; i < leng; i++ ) {
         callback.call(this, items[i], i, items);
       }
 
@@ -142,6 +178,91 @@
     this.count = function() {
       return items.length;
     };
+    /**
+     * Find values in basket and call callback with result values[] found
+     * @param search
+     * @param callback
+     * @param callbackthis
+     * @returns {Array}
+     */
+    this.find = function( search, callback, thisArg ) {
+      var result = [];
+
+      function _addIfequal( one, two, item ) {
+
+        //http://stackoverflow.com/questions/10776600/testing-for-equality-of-regular-expressions
+        function isRegexEqual( x, y ) {
+          return (x instanceof RegExp) &&
+            (y instanceof RegExp) &&
+            (x.source === y.source) &&
+            (x.global === y.global) &&
+            (x.ignoreCase === y.ignoreCase) &&
+            (x.multiline === y.multiline) &&
+            (x.sticky === y.sticky);
+        }
+
+        var first = !!one ? one.valueOf() : one,
+          second = !!two ? two.valueOf() : two;
+
+        //removing support for RegExp for now (increasing performance...)
+        //TODO: call isRegexEqual only when value to find is RegExp
+        (/*isRegexEqual(one, two) || */first === second) && (result.push(item));
+      }
+
+      function _isTypeOk( value ) {
+        var oType = _toString(value);
+        //arrays and RegExp and Functions are not supported in find...
+        return oType === '[object String]' ||
+          oType === '[object Number]' ||
+          oType === '[object Boolean]' ||
+          oType === '[object Date]' ||
+          oType === '[object Object]' ||
+          //          oType === '[object RegExp]' ||
+          oType === '[object Undefined]' ||
+          oType === '[object Null]';
+      }
+
+      function _search() {
+        var leng = items.length,
+          isKeyValueSearch = (typeof search === 'object' && (!!search && _hasOwn(search, 'key'))),
+          value;
+
+        value = isKeyValueSearch === false ? search : search.value;
+
+        if ( _isTypeOk(value) ) {
+          for ( var i = 0; i < leng; i++ ) {
+            var it = items[i], valueIn = items[i];
+            if ( isKeyValueSearch ) {
+              if ( !!it && _hasOwn(it, search.key) ) {
+                valueIn = it[search.key];
+                _addIfequal(valueIn, value, it);
+              }
+            }
+            else {
+              _addIfequal(valueIn, value, it);
+            }
+            //            if ( result.length ) {
+            //              break;
+            //            }
+          }
+        }
+      }
+
+      _search();
+
+      if ( callback && isFunction(callback) ) {
+        setTimeout(function() {
+          callback.call(thisArg, result.length > 0 ? null : new Error('not found'), result);
+        });
+      }
+
+      return result;
+    };
+
+    this.getOptions = function() {
+      return options;
+    };
+
   }
 
   /////////////
@@ -153,14 +274,23 @@
     }
   });
 
-  objExports.create = function() {
-    return new Basket();
+  objExports.create = function( options ) {
+    var opt;
+    if ( !!options && _toString(options) === '[object Object]' && !!options[OPTIONS.UNIQUEKEY] && typeof options[OPTIONS.UNIQUEKEY] === 'string' ) {
+      opt = {};
+      opt[OPTIONS.UNIQUEKEY] = options[OPTIONS.UNIQUEKEY];
+    }
+    return new Basket(opt);
   };
 
   return objExports;
 
   function isArray( obj ) {
     return Object.prototype.toString.call(obj) === '[object Array]';
+  }
+
+  function isFunction( obj ) {
+    return {}.toString.call(obj) === '[object Function]';
   }
 
 });

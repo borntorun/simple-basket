@@ -28,6 +28,37 @@ describe('simplebasket', function() {
     basket = window.simplebasket.create();
   });
 
+  describe('#create==>', function() {
+
+    function useCaseOptionsUndefined(val) {
+      var b = window.simplebasket.create(val);
+      (b.getOptions().uniqueKey === undefined).should.equal(true);
+    }
+
+    it('should create with no options', function() {
+      var b = window.simplebasket.create();
+      (b.getOptions().uniqueKey === undefined).should.equal(true);
+    });
+    it('should create but silent invalid options', function() {
+      useCaseOptionsUndefined({invalid:'test'});
+      useCaseOptionsUndefined(1);
+      useCaseOptionsUndefined(true);
+      useCaseOptionsUndefined({});
+      useCaseOptionsUndefined('test');
+      useCaseOptionsUndefined(null);
+      useCaseOptionsUndefined(undefined);
+      useCaseOptionsUndefined({uniqueKey:{}});
+      useCaseOptionsUndefined({uniqueKey:1});
+      useCaseOptionsUndefined({uniqueKey:true});
+      useCaseOptionsUndefined({uniqueKey:null});
+      useCaseOptionsUndefined({uniqueKey:undefined});
+    });
+    it('should create with valid option', function() {
+      var b = window.simplebasket.create({uniqueKey: 'key'});
+      (b.getOptions().uniqueKey === undefined).should.equal(false);
+      (b.getOptions().uniqueKey).should.equal('key');
+    });
+  });
   describe('#add==>', function() {
     it('should add 1 item to basket', function() {
       basket.add({o: 1});
@@ -38,6 +69,27 @@ describe('simplebasket', function() {
       basket.add({o: 2});
       basket.add({o: 3});
       (basket.count()).should.equal(3);
+    });
+    it('should not add duplicate items if uniqueKey is set', function() {
+      var b = window.simplebasket.create({uniqueKey: 'o'});
+      var itemkey = '0101010101';
+      b.add({o: itemkey, item: 1});
+      (b.count()).should.equal(1);
+
+      b.add({o: itemkey, item: 2});
+      (b.count()).should.equal(1);
+      (b.getAll()[0].item).should.equal(1);
+
+      b.add({o: itemkey, item: 3},{o: itemkey, item: 4},{o: itemkey, item: 5});
+      (b.count()).should.equal(1);
+      (b.getAll()[0].item).should.equal(1);
+
+      b = window.simplebasket.create({uniqueKey: 'o'});
+      b.add([{o: itemkey, item: 1},{o: 100, item: 2},{o: itemkey, item: 3}]);
+      (b.count()).should.equal(2);
+      (b.getAll()[0].item).should.equal(1);
+      (b.getAll()[1].item).should.equal(2);
+
     });
   });
   describe('#get...==>', function() {
@@ -283,6 +335,124 @@ describe('simplebasket', function() {
       var copy = basket.getAll();
 
       (copy[0].o + copy[1].o + copy[2].o + copy[3].o ).should.equal(10);
+    });
+  });
+  describe('#find==>', function() {
+    function Obj() {
+      this.o = 1;
+    }
+
+    var result, obj;
+
+    beforeEach(function() {
+      basket = window.simplebasket.create();
+
+      obj = new Obj();
+
+      basket.add(null, 1, 2, 3, 1,
+        {o: undefined, name: 'und'},
+        {o: null, name: 'null'},
+        {o: 1},
+        {name: 'joao', o: 1},
+        {o: 2},
+        new Date(2001, 1, 1), /^a/ig, 12.99, false, 10,
+        {o: true, name: 'true'},
+        {name: 'x', o: new Date(2001, 1, 1)},
+        obj,
+        undefined,
+        'joao',
+        new RegExp('^a', 'gi')
+      );
+    });
+    it('should find Number in basket', function() {
+
+      result = basket.find(1);
+      (result.length).should.equal(2);
+      result = basket.find({key: 'o', value: 1});
+      (result.length).should.equal(3);
+      result = basket.find(12.99);
+      (result.length).should.equal(1);
+    });
+    it('should find String in basket', function() {
+      result = basket.find('joao');
+      (result.length).should.equal(1);
+      result = basket.find({key: 'name', value: 'joao'});
+      (result.length).should.equal(1);
+    });
+    it('should find Boolean in basket', function() {
+      result = basket.find(false);
+      (result.length).should.equal(1);
+      result = basket.find({key: 'o', value: true});
+      (result.length).should.equal(1);
+    });
+    /*it('should find RegExp in basket', function() {
+      result = basket.find(/^a/ig);
+      (result.length).should.equal(2);
+    });*/
+    it('should find Object in basket', function() {
+      result = basket.find(obj);
+      (result.length).should.equal(1);
+      (result[0]).should.equal(obj);
+    });
+    it('should find Date in basket', function() {
+      result = basket.find(new Date(2001, 1, 1));
+      (result.length).should.equal(1);
+      result = basket.find({key: 'o', value: new Date(2001, 1, 1)});
+      (result.length).should.equal(1);
+    });
+    it('should not find with invalid search object', function() {
+      result = basket.find({notkey: 'o'});
+      (result.length).should.equal(0);
+    });
+    it('should find with key/value=undefined in basket', function() {
+
+      //we are in phantomjs v.1.9.x do not run this test see:https://github.com/ariya/phantomjs/issues/11722
+      if ( Object.prototype.toString.call(undefined) === '[object DOMWindow]' ) {
+        return;
+      }
+
+      result = basket.find({key: 'o'});
+      (result.length).should.equal(1);
+      result = basket.find(undefined);
+      (result.length).should.equal(1);
+
+    });
+    it('should not find if not exists key', function() {
+      result = basket.find({key: 'xxx'});
+      (result.length).should.equal(0);
+    });
+    it('should find null in basket', function() {
+      //we are in phantomjs v.1.9.x do not run this test see:https://github.com/ariya/phantomjs/issues/11722
+      if ( Object.prototype.toString.call(undefined) === '[object DOMWindow]' ) {
+        return;
+      }
+
+      result = basket.find({key: 'o', value: null});
+      (result.length).should.equal(1);
+      result = basket.find(null);
+      (result.length).should.equal(1);
+
+    });
+    it('should call callback with result', function( done ) {
+      result = basket.find(obj, function( err, result ) {
+        (err === null).should.equal(true);
+        (result.length).should.equal(1);
+        (result[0]).should.equal(obj);
+        done();
+      });
+    });
+    it('should call callback with error if not found', function( done ) {
+      result = basket.find('sdsdsd', function( err, result ) {
+        (err === null).should.equal(false);
+        (result.length).should.equal(0);
+        done();
+      });
+    });
+    it('should call callback with this obj', function( done ) {
+      result = basket.find(obj, function() {
+        (this).should.equal(obj);
+        done();
+      }, obj);
     });
   });
   describe('#other==>', function() {

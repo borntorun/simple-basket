@@ -14,7 +14,7 @@
     module.exports = factory(require('simplebasket'));
   }
   else {
-    global.simplebasket = factory(global.simplebasket);
+    factory(global.simplebasket);
   }
 })(this, function( simplebasket ) {
   'use strict';

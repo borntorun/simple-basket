@@ -49,6 +49,7 @@ module.exports = function( grunt ) {
       dist: {
         files: {
           '<%= buildDir %>/<%= pkg.namedist %>.js': ['src/<%= pkg.namedist %>.js'],
+          '<%= buildDir %>/plugins/storage-localforage.js': ['src/plugin-wrapper/storage.js', 'src/drivers/localforageDriver.js'],
           '<%= buildDir %>/plugins/storage.js': ['src/plugin-wrapper/storage.js'],
           '<%= buildDir %>/plugins/drivers/localforageDriver.js': ['src/drivers/localforageDriver.js']
         }
@@ -75,8 +76,7 @@ module.exports = function( grunt ) {
           banner: '<%= banner %>'
         },
         files: {
-          '<%= buildDir %>/<%= pkg.namedist %>.min.js': ['<%= buildDir %>/<%= pkg.namedist %>.js'],
-          '<%= buildDir %>/<%= pkg.namedist %>-bundle.min.js': ['<%= buildDir %>/<%= pkg.namedist %>-bundle.js']
+          '<%= buildDir %>/<%= pkg.namedist %>.min.js': ['<%= buildDir %>/<%= pkg.namedist %>.js']
         }
       },
       buildpluginstorage: {
@@ -92,6 +92,28 @@ module.exports = function( grunt ) {
         },
         files: {
           '<%= buildDir %>/plugins/storage.min.js': ['<%= buildDir %>/plugins/storage.js']
+        }
+      },
+      buildpluginstoragelocalforage: {
+        options: {
+          banner: [
+            '/*!',
+            ' * storage.js',
+            ' * storage plugin wrapper to use with',
+            ' * simplebasket (https://github.com/borntorun/simple-basket)',
+            ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
+            ' */\n',
+            '/*!',
+            ' * localforageDriver.js',
+            ' * localforage (https://github.com/mozilla/localForage) driver',
+            ' * Supports all internal drivers in localforage plus:',
+            ' * - sessionStorageWrapper (https://github.com/thgreasi/localForage-sessionStorageWrapper)',
+            ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
+            ' */\n'
+          ].join('\n')
+        },
+        files: {
+          '<%= buildDir %>/plugins/storage-localforage.min.js': ['<%= buildDir %>/plugins/storage-localforage.js']
         }
       },
       builddriver: {

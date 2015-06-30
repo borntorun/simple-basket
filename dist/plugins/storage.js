@@ -6,12 +6,12 @@
 (function( global, factory ) {
   'use strict';
   if ( typeof define === 'function' && define.amd ) {
-    define(['simplebasket-extend'], function( simplebasket ) {
+    define(['simplebasket'], function( simplebasket ) {
       return factory(simplebasket);
     });
   }
   else if ( typeof exports === 'object' ) {
-    module.exports = factory(require('simplebasket-extend'));
+    module.exports = factory(require('simplebasket'));
   }
   else {
     global.simplebasket = factory(global.simplebasket);

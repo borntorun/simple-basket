@@ -20,13 +20,6 @@ module.exports = function( grunt ) {
       ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
       ' */\n'
     ].join('\n'),
-    bannerextend: [
-      '/*!',
-      ' * <%= pkg.name %>-extend v%%VERSION%%',
-      ' * <%= pkg.homepage %>',
-      ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
-      ' */\n'
-    ].join('\n'),
     clean: {
       dist: {
         files: [
@@ -56,8 +49,6 @@ module.exports = function( grunt ) {
       dist: {
         files: {
           '<%= buildDir %>/<%= pkg.namedist %>.js': ['src/<%= pkg.namedist %>.js'],
-          '<%= buildDir %>/<%= pkg.namedist %>-extend.js': ['src/<%= pkg.namedist %>-extend.js'],
-          '<%= buildDir %>/<%= pkg.namedist %>-bundle.js': ['src/<%= pkg.namedist %>.js', 'src/<%= pkg.namedist %>-extend.js'],
           '<%= buildDir %>/plugins/storage.js': ['src/plugin-wrapper/storage.js'],
           '<%= buildDir %>/plugins/drivers/localforageDriver.js': ['src/drivers/localforageDriver.js']
         }
@@ -86,14 +77,6 @@ module.exports = function( grunt ) {
         files: {
           '<%= buildDir %>/<%= pkg.namedist %>.min.js': ['<%= buildDir %>/<%= pkg.namedist %>.js'],
           '<%= buildDir %>/<%= pkg.namedist %>-bundle.min.js': ['<%= buildDir %>/<%= pkg.namedist %>-bundle.js']
-        }
-      },
-      buildextend: {
-        options: {
-          banner: '<%= bannerextend %>'
-        },
-        files: {
-          '<%= buildDir %>/<%= pkg.namedist %>-extend.min.js': ['<%= buildDir %>/<%= pkg.namedist %>-extend.js']
         }
       },
       buildpluginstorage: {
@@ -269,6 +252,16 @@ module.exports = function( grunt ) {
             'http://localhost:8888/test/unit/plugin.html'
           ]
         }
+      },
+      unitdeploy: {
+        options: {
+          logErrors: true,
+          urls: [
+            'http://localhost:8888/test/unit/simplebasket-deploy.html',
+            'http://localhost:8888/test/unit/localforagedriver-deploy.html',
+            'http://localhost:8888/test/unit/plugin-deploy.html'
+          ]
+        }
       }
     },
 
@@ -424,12 +417,12 @@ module.exports = function( grunt ) {
   /**
    * Test tasks
    */
-  grunt.registerTask('test', ['jshint', 'connect', 'mocha', 'watch:mochaunit' ]);
+  grunt.registerTask('test', ['jshint', 'connect', 'mocha:unit', 'watch:mochaunit' ]);
 
   /**
    * Build Task
    */
-  grunt.registerTask('build', ['jshint', 'concat', 'uglify', 'sed:version']);
+  grunt.registerTask('build', ['jshint', 'concat', 'uglify', 'sed:version', 'connect', 'mocha:unitdeploy']);
   /**
    * Default
    */

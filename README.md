@@ -57,7 +57,13 @@ console.log(basket.getall()); //[1, 2, 3, 4, 5]
 
 ## simplebasket Interface
 
-* create() - Initialize a new basket
+* create() - Initialize a new Basket
+
+##### Extending the basket
+
+* plug() - permits plugging a plugin-wrapper
+* lose() - unplugg a plugin-wrapper
+* getBasePluginWrapper() - just to get the plugin base object 
 
 ## Basket Interface
 
@@ -70,12 +76,6 @@ console.log(basket.getall()); //[1, 2, 3, 4, 5]
 * iterate() - Iterate the basket calling a function for each item 
 * count() - Returns the number of items in the basket
 * find() - Find values in basket
-
-## Extending the basket
-
-* plug() - permits plugging a plugin-wrapper
-* lose() - unplugg a plugin-wrapper
-* getBasePluginWrapper() - just to get the plugin base object 
 
 The Basket interface is extended with:
 

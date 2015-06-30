@@ -57,7 +57,13 @@ console.log(basket.getall()); //[1, 2, 3, 4, 5]
 
 ## simplebasket Interface
 
-* create() - Initialize a new basket
+* create() - Initialize a new Basket
+
+##### Extending the basket
+
+* plug() - permits plugging a plugin-wrapper
+* lose() - unplugg a plugin-wrapper
+* getBasePluginWrapper() - just to get the plugin base object 
 
 ## Basket Interface
 
@@ -71,24 +77,15 @@ console.log(basket.getall()); //[1, 2, 3, 4, 5]
 * count() - Returns the number of items in the basket
 * find() - Find values in basket
 
-## Extending the basket
-
-Its possible to extend simplebasket using simplebasket-extend.js:
-This extends the simplebasket interface with these method:
-
-* plug() - permits plugging a plugin-wrapper
-* lose() - unplugg a plugin-wrapper
-* getBasePluginWrapper() - just to get the plugin base object 
-
 The Basket interface is extended with:
 
-* implements() - permits an instance to use a driver that implements a wrappwer-plugin interface
+* implements() - permits an instance to use a driver that implements a plugin-wrapper interface
 
-The package comes with a storage.js wrapper and a localforageDriver.js that permits a basket to be saved in browser databases with the localforage package.
+The package comes with a storage.js wrapper and a localforageDriver.js that permits a basket to be saved in browser databases with the [localforage](https://github.com/mozilla/localForage) package.
 
 ### Example
 
-(Include  simplebasket-extend.js, storage.js and localforageDriver.js)
+(Include storage.js and localforageDriver.js)
 
 ```
 var basket, lfDriver;

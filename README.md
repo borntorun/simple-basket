@@ -46,13 +46,26 @@ var basket = require('simple-basket').create();
 Add items:
 
 ```
-basket.add(1,2,3,4,5);
+//add array
+var aitems = [1, 2, 3, 4, 5, {'id': 1, name: 'john'}, {'id': 2, name: 'john'}];
+basket.add(aitems);
+
+//add list of items (
+basket.add(1, 2, 3, 4, 5, {'id': 1, name: 'john'}, {'id': 2, name: 'john'});
 ```
 
 Get items
 
 ```
-console.log(basket.getall()); //[1, 2, 3, 4, 5]
+basket.getall(); //[1, 2, 3, 4, 5, {'id': 1, name: 'john'}, {'id': 2, name: 'john'}]
+```
+
+Find items
+
+```
+basket.find({key: 'id', value: '2'}) //[{'id': 2, name: 'john'}]
+
+basket.find({key: 'name', value: 'john'}) //[{'id': 1, name: 'john'}, {'id': 2, name: 'john'}]
 ```
 
 ## simplebasket Interface
@@ -85,7 +98,8 @@ The package comes with a storage.js wrapper and a localforageDriver.js that perm
 
 ### Example
 
-(Include storage.js and localforageDriver.js)
+Install localforage: ```bower install localforage```
+Include files: dist/plugins/storage.js + dist/plugins/drivers/localforageDriver.js or dist/plugins/storage-localforage.js
 
 ```
 var basket, lfDriver;
@@ -115,8 +129,6 @@ window.localforageDriver
         //error
       });
 });
-
-
 ```
 
 Notes

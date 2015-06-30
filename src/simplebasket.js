@@ -86,7 +86,7 @@
     };
     /**
      * Sets the basket cloning from an array of values
-     * @param value array with values to set
+     * @param value {Array} with values to set
      * @returns {*} returns the basket instance
      */
     this.set = function( value ) {
@@ -113,8 +113,8 @@
     };
     /**
      * Remove an item by a reference key
-     * @param key
-     * @param value
+     * @param key {String}
+     * @param value {*}
      * @returns {Array}
      */
     this.remove = function( key, value ) {
@@ -136,7 +136,7 @@
     };
     /**
      * Remove one item by position
-     * @param index position to remove
+     * @param index {Number} position to remove
      * @returns {Array} with item removed
      */
     this.removeAt = function( index ) {
@@ -157,7 +157,7 @@
     };
     /**
      * Iterate the basket calling a function for each item
-     * @param callback
+     * @param callback {Function}
      */
     this.iterate = function( callback ) {
       if ( !isFunction(callback) ) {
@@ -180,9 +180,9 @@
     };
     /**
      * Find values in basket and call callback with result values[] found
-     * @param search
-     * @param callback
-     * @param callbackthis
+     * @param search {*}
+     * @param callback {Function}
+     * @param callbackthis {Object}
      * @returns {Array}
      */
     this.find = function( search, callback, thisArg ) {

@@ -11,7 +11,7 @@ Dependencies
 
 If you want to use the storage feature included that permits a basket to be saved in browser databases with the localforage package, you'll need:
 
-* [es6-promise](https://github.com/jakearchibald/es6-promise)
+* [es6-promise](https://github.com/jakearchibald/es6-promise) **version ~2.2.0**
 * [localforage](https://github.com/mozilla/localForage) **version ~1.2.3**
 * [localforage-sessionstoragewrapper](https://github.com/thgreasi/localForage-sessionStorageWrapper) **version ~1.0.1**
 
@@ -137,6 +137,7 @@ window.localforageDriver
     lfDriver = value;
     basket.implements(basket.ISTORAGE, lfDriver);
     
+    //to save the basket
     basket.save()
       .then(function( data ) {
         //basket was saved to storage
@@ -144,6 +145,10 @@ window.localforageDriver
       .catch(function( error ) {
         //error
       });
+    
+    //...
+    
+    //to load the basket from storage:
     basket.load()
       .then(function( data ) {
         //data loaded from storage to basket

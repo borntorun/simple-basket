@@ -14,11 +14,19 @@ module.exports = function( grunt ) {
     pkg: grunt.file.readJSON('package.json'),
     buildDir: 'dist',
     banner: [
-      '/*!',
-      ' * <%= pkg.name %> v%%VERSION%%',
-      ' * <%= pkg.homepage %>',
-      ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
-      ' */\n'
+//      '/*!',
+//      ' * <%= pkg.name %> v%%VERSION%%',
+//      ' * <%= pkg.homepage %>',
+//      ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
+//      ' */\n'
+        '/*!',
+        ' * <%= pkg.name %> - <%= pkg.description %>.',
+        ' * <%= pkg.homepage %>',
+        ' * Copyright (c) 2015 <%= pkg.author %>',
+        ' * Licensed under MIT license',
+        ' *     See https://github.com/borntorun/simple-basket/blob/master/LICENSE',
+        ' * v%%VERSION%%',
+        ' */\n'
     ].join('\n'),
     clean: {
       dist: {
@@ -49,9 +57,22 @@ module.exports = function( grunt ) {
       dist: {
         files: {
           '<%= buildDir %>/<%= pkg.namedist %>.js': ['src/<%= pkg.namedist %>.js'],
-          '<%= buildDir %>/plugins/storage-localforage.js': ['src/plugin-wrapper/storage.js', 'src/drivers/localforageDriver.js'],
-          '<%= buildDir %>/plugins/storage.js': ['src/plugin-wrapper/storage.js'],
-          '<%= buildDir %>/plugins/drivers/localforageDriver.js': ['src/drivers/localforageDriver.js']
+          '<%= buildDir %>/plugins/storage/storage.js': ['src/plugin-wrapper/storage.js'],
+          '<%= buildDir %>/plugins/storage/storage-localforage.js': [
+            'bower_components/es6-promise/promise.js',
+            'bower_components/localforage/dist/localforage.nopromises.js',
+            'bower_components/localforage-sessionstoragewrapper/src/localforage-sessionstoragewrapper.js',
+            'src/plugin-wrapper/storage.js',
+            'src/drivers/localforageDriver.js'],
+          '<%= buildDir %>/plugins/storage/with-promise-polyfill/storage.js': [
+            'bower_components/es6-promise/promise.js',
+            'src/plugin-wrapper/storage.js'
+          ],
+          '<%= buildDir %>/plugins/storage/drivers/localforageDriver.js': ['src/drivers/localforageDriver.js'],
+          '<%= buildDir %>/plugins/storage/drivers/with-promise-polyfill/localforageDriver.js': [
+            'bower_components/es6-promise/promise.js',
+            'src/drivers/localforageDriver.js'
+          ]
         }
       }
     },
@@ -91,7 +112,26 @@ module.exports = function( grunt ) {
           ].join('\n')
         },
         files: {
-          '<%= buildDir %>/plugins/storage.min.js': ['<%= buildDir %>/plugins/storage.js']
+          '<%= buildDir %>/plugins/storage/storage.min.js': ['<%= buildDir %>/plugins/storage/storage.js'],
+          '<%= buildDir %>/plugins/storage/with-promise-polyfill/storage.min.js': ['<%= buildDir %>/plugins/storage/with-promise-polyfill/storage.js']
+        }
+      },
+      buildpluginstorageWithpolyfill: {
+        options: {
+          banner: [
+            '/*!',
+            ' * storage.js',
+            ' * storage plugin wrapper to use with',
+            ' * simplebasket (https://github.com/borntorun/simple-basket)',
+            ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
+            ' *',
+            ' * This package includes the following packages:',
+            ' * es6-promise (https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE)',
+            ' */\n'
+          ].join('\n')
+        },
+        files: {
+          '<%= buildDir %>/plugins/storage/with-promise-polyfill/storage.min.js': ['<%= buildDir %>/plugins/storage/with-promise-polyfill/storage.js']
         }
       },
       buildpluginstoragelocalforage: {
@@ -105,23 +145,28 @@ module.exports = function( grunt ) {
             ' */\n',
             '/*!',
             ' * localforageDriver.js',
-            ' * localforage (https://github.com/mozilla/localForage) driver',
+            ' * Driver for localforage (https://github.com/mozilla/localForage)',
             ' * Supports all internal drivers in localforage plus:',
             ' * - sessionStorageWrapper (https://github.com/thgreasi/localForage-sessionStorageWrapper)',
             ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
+            ' *',
+            ' * This package includes the following packages:',
+            ' * es6-promise (https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE)',
+            ' * localForage (https://github.com/mozilla/localForage/blob/master/LICENSE)',
+            ' * localForage-sessionStorageWrapper (https://github.com/thgreasi/localForage-sessionStorageWrapper/blob/master/LICENSE)',
             ' */\n'
           ].join('\n')
         },
         files: {
-          '<%= buildDir %>/plugins/storage-localforage.min.js': ['<%= buildDir %>/plugins/storage-localforage.js']
+          '<%= buildDir %>/plugins/storage/storage-localforage.min.js': ['<%= buildDir %>/plugins/storage/storage-localforage.js']
         }
       },
-      builddriver: {
+      buildlocalforageDriver: {
         options: {
           banner: [
             '/*!',
             ' * localforageDriver.js',
-            ' * localforage (https://github.com/mozilla/localForage) driver',
+            ' * Driver for localforage (https://github.com/mozilla/localForage)',
             ' * Supports all internal drivers in localforage plus:',
             ' * - sessionStorageWrapper (https://github.com/thgreasi/localForage-sessionStorageWrapper)',
             ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
@@ -130,7 +175,28 @@ module.exports = function( grunt ) {
 
         },
         files: {
-          '<%= buildDir %>/plugins/drivers/localforageDriver.min.js': ['<%= buildDir %>/plugins/drivers/localforageDriver.js']
+          '<%= buildDir %>/plugins/storage/drivers/localforageDriver.min.js': ['<%= buildDir %>/plugins/storage/drivers/localforageDriver.js'],
+          '<%= buildDir %>/plugins/storage/drivers/with-promise-polyfill/localforageDriver.min.js': ['<%= buildDir %>/plugins/storage/drivers/with-promise-polyfill/localforageDriver.js']
+        }
+      },
+      buildlocalforageDriverWithpolyfill: {
+        options: {
+          banner: [
+            '/*!',
+            ' * localforageDriver.js',
+            ' * Driver for localforage (https://github.com/mozilla/localForage)',
+            ' * Supports all internal drivers in localforage plus:',
+            ' * - sessionStorageWrapper (https://github.com/thgreasi/localForage-sessionStorageWrapper)',
+            ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
+            ' *',
+            ' * This package includes the following packages:',
+            ' * es6-promise (https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE)',
+            ' */\n'
+          ].join('\n')
+
+        },
+        files: {
+          '<%= buildDir %>/plugins/storage/drivers/with-promise-polyfill/localforageDriver.min.js': ['<%= buildDir %>/plugins/storage/drivers/with-promise-polyfill/localforageDriver.js']
         }
       }
     },
@@ -271,7 +337,7 @@ module.exports = function( grunt ) {
           urls: [
             'http://localhost:8888/test/unit/simplebasket.html',
             'http://localhost:8888/test/unit/localforagedriver.html',
-            'http://localhost:8888/test/unit/plugin.html'
+            'http://localhost:8888/test/unit/storage-localforage.html'
           ]
         }
       },
@@ -281,7 +347,7 @@ module.exports = function( grunt ) {
           urls: [
             'http://localhost:8888/test/unit/simplebasket-deploy.html',
             'http://localhost:8888/test/unit/localforagedriver-deploy.html',
-            'http://localhost:8888/test/unit/plugin-deploy.html'
+            'http://localhost:8888/test/unit/storage-localforage-deploy.html'
           ]
         }
       }
@@ -440,6 +506,7 @@ module.exports = function( grunt ) {
    * Test tasks
    */
   grunt.registerTask('test', ['jshint', 'connect', 'mocha:unit', 'watch:mochaunit' ]);
+  grunt.registerTask('test:deploy', ['connect', 'mocha:unitdeploy']);
 
   /**
    * Build Task

@@ -34,11 +34,12 @@
   "devDependencies": {
     "mocha": "~2.2.5",
     "should": "~6.0.3",
-    "requirejs": "~2.1.18"
+    "requirejs": "~2.1.18",
+    "es6-promise": "~2.2.0",
+    "localforage": "1.2.3",
+    "localforage-sessionstoragewrapper": "1.0.1"
   },
   "dependencies": {
-    "lodash": "~3.9.3",
-    "localforage": "~1.2.3",
-    "localforage-sessionstoragewrapper": "~1.0.1"
+    "lodash": "~3.9.3"
   }
 }

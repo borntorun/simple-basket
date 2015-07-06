@@ -122,12 +122,6 @@ describe('storage wrapper plugin', function() {
         .catch(function( error ) {
           done(error);
         });
-
-//
     });
-
-
-
   });
-
 });

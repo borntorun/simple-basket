@@ -17,7 +17,7 @@
     "store",
     "shopping"
   ],
-  "author": "João Carvalho",
+  "author": "João Carvalho (https://github.com/borntorun)",
   "license": "MIT",
   "devDependencies": {
     "grunt": "^0.4.5",

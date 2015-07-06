@@ -7,12 +7,16 @@ Store values and objects in an array in memory.
 Dependencies
 ----------
 
-[lodash] (https://github.com/lodash/lodash) **version: ~3.9.3**
+[lodash](https://github.com/lodash/lodash) **version: ~3.9.3**
 
-For use the localforageDriver with the storage wrapper:
+If you want to use the storage feature included that permits a basket to be saved in browser databases with the localforage package, you'll need:
 
-[localforage] (https://github.com/mozilla/localForage) **version ~1.2.3**
-[localforage-sessionstoragewrapper] (https://github.com/thgreasi/localForage-sessionStorageWrapper) **version ~1.0.1**
+* [es6-promise](https://github.com/jakearchibald/es6-promise)
+* [localforage](https://github.com/mozilla/localForage) **version ~1.2.3**
+* [localforage-sessionstoragewrapper](https://github.com/thgreasi/localForage-sessionStorageWrapper) **version ~1.0.1**
+
+(the package dist includes a bundle file that ships all these 3 dependencies)
+
 
 How to use
 ----------
@@ -96,10 +100,29 @@ The Basket interface is extended with:
 
 The package comes with a storage.js wrapper and a localforageDriver.js that permits a basket to be saved in browser databases with the [localforage](https://github.com/mozilla/localForage) package.
 
-### Example
+## Using the storage wrapper
 
-Install localforage: ```bower install localforage```
-Include files: dist/plugins/storage.js + dist/plugins/drivers/localforageDriver.js or dist/plugins/storage-localforage.js
+### Example with the localforageDriver
+
+##### option 1 - using the complete bundle (easy)
+
+Include File: dist/plugins/storage/storage-localforage.js
+This file include all dependencies needed:
+
+* the [es6-promise](https://github.com/jakearchibald/es6-promise)  polyfill (as the wrapper relies on promises) for browsers that don't support it - is used the same polyfill that ships with localforage;
+* the [localforage](https://github.com/mozilla/localForage) package
+* the [localforage-sessionstoragewrapper](https://github.com/thgreasi/localForage-sessionStorageWrapper) package for session storage
+
+##### option 2 - install dependencies
+
+```bower install localforage#1.2.3```
+
+```bower install localforage-sessionstoragewrapper#1.0.1```
+
+Include the files: 
+
+* dist/plugins/storage/storage.js
+* dist/plugins/storage/drivers/localforageDriver.js
 
 ```
 var basket, lfDriver;

@@ -1,7 +1,7 @@
 {
   "name": "simple-basket",
   "namedist": "simplebasket",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/borntorun/simple-basket.git"

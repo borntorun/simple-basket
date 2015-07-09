@@ -87,7 +87,7 @@ module.exports = function( grunt ) {
     uglify: {
       options: {
         footer: '\n',
-        mangle: true,
+        mangle: false,
         beautify: false,
         compress: true,
         indent_level: 0

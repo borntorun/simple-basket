@@ -87,14 +87,17 @@ module.exports = function( grunt ) {
     uglify: {
       options: {
         footer: '\n',
-        mangle: false,
+        mangle: true,
         beautify: false,
         compress: true,
         indent_level: 0
       },
       buildpkg: {
         options: {
-          banner: '<%= banner %>'
+          banner: '<%= banner %>',
+          mangle: {
+            except: [ 'Basket', 'BasePluginWrapper']
+          }
         },
         files: {
           '<%= buildDir %>/<%= pkg.namedist %>.min.js': ['<%= buildDir %>/<%= pkg.namedist %>.js']
@@ -112,8 +115,7 @@ module.exports = function( grunt ) {
           ].join('\n')
         },
         files: {
-          '<%= buildDir %>/plugins/storage/storage.min.js': ['<%= buildDir %>/plugins/storage/storage.js'],
-          '<%= buildDir %>/plugins/storage/with-promise-polyfill/storage.min.js': ['<%= buildDir %>/plugins/storage/with-promise-polyfill/storage.js']
+          '<%= buildDir %>/plugins/storage/storage.min.js': ['<%= buildDir %>/plugins/storage/storage.js']
         }
       },
       buildpluginstorageWithpolyfill: {
@@ -151,9 +153,9 @@ module.exports = function( grunt ) {
             ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
             ' *',
             ' * This package includes the following packages:',
-            ' * es6-promise (https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE)',
-            ' * localForage (https://github.com/mozilla/localForage/blob/master/LICENSE)',
-            ' * localForage-sessionStorageWrapper (https://github.com/thgreasi/localForage-sessionStorageWrapper/blob/master/LICENSE)',
+            ' * - es6-promise (https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE)',
+            ' * - localForage (https://github.com/mozilla/localForage/blob/master/LICENSE)',
+            ' * - localForage-sessionStorageWrapper (https://github.com/thgreasi/localForage-sessionStorageWrapper/blob/master/LICENSE)',
             ' */\n'
           ].join('\n')
         },
@@ -172,11 +174,9 @@ module.exports = function( grunt ) {
             ' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>; Licensed MIT',
             ' */\n'
           ].join('\n')
-
         },
         files: {
-          '<%= buildDir %>/plugins/storage/drivers/localforageDriver.min.js': ['<%= buildDir %>/plugins/storage/drivers/localforageDriver.js'],
-          '<%= buildDir %>/plugins/storage/drivers/with-promise-polyfill/localforageDriver.min.js': ['<%= buildDir %>/plugins/storage/drivers/with-promise-polyfill/localforageDriver.js']
+          '<%= buildDir %>/plugins/storage/drivers/localforageDriver.min.js': ['<%= buildDir %>/plugins/storage/drivers/localforageDriver.js']
         }
       },
       buildlocalforageDriverWithpolyfill: {
@@ -347,7 +347,8 @@ module.exports = function( grunt ) {
           urls: [
             'http://localhost:8888/test/unit/simplebasket-deploy.html',
             'http://localhost:8888/test/unit/localforagedriver-deploy.html',
-            'http://localhost:8888/test/unit/storage-localforage-deploy.html'
+            'http://localhost:8888/test/unit/storage-localforage-deploy.html',
+            'http://localhost:8888/test/unit/storage-localforage-bundle-deploy.html'
           ]
         }
       }

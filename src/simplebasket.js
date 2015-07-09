@@ -299,13 +299,13 @@
   var pluginWrapperDefinition = {};
 
   /**
-   * implements
+   * implement
    * Allows an instance Basket to implement a driver for the plugin-wrapper interface
    * @param wrapperName {String} - the plugin-wrapper pluged to simplebasket
    * @param driver {Object} - the implementation object
    * @returns {Boolean}
    */
-  Basket.prototype.implements = function( wrapperName, driver ) {
+  Basket.prototype.implement = function( wrapperName, driver ) {
 
     if ( this instanceof Basket === false ) {
       return false;
@@ -377,12 +377,12 @@
   };
 
   /**
-   * prevent
+   * dispose
    * Removes from an instance Basket a driver implementation for the plugin-wrapper interface
    * @param wrapperName - the plugin-wrapper pluged to simplebasket
    * @returns {Boolean}
    */
-  Basket.prototype.prevent = function( wrapperName ) {
+  Basket.prototype.dispose = function( wrapperName ) {
     if ( this instanceof Basket === false ) {
       return false;
     }
@@ -467,7 +467,7 @@
    * @param oBasePluginWrapper {BasePluginWrapper} to unplug
    * @param force {Boolean} Clear all traces from wrapper/driver (after lose call, instances already implementing the plugin-wrapper with some driver can still work and call the driver; by forcing we are eliminating that possibility)
    */
-  objExports.lose = function( oBasePluginWrapper, force ) {
+  objExports.unplug = function( oBasePluginWrapper, force ) {
     var name = oBasePluginWrapper.type;
     delete pluginWrapper[name];
     delete pluginWrapperDefinition[name];

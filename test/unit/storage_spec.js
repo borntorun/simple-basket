@@ -58,7 +58,7 @@ describe('storage wrapper plugin', function() {
           localforageDriver = value;
 
           basket = window.simplebasket.create();
-          basket.implements(basket.ISTORAGE, localforageDriver);
+          basket.implement(basket.ISTORAGE, localforageDriver);
 
           done();
         });

@@ -79,8 +79,10 @@ basket.find({key: 'name', value: 'john'}) //[{'id': 1, name: 'john'}, {'id': 2, 
 ##### Extending the basket
 
 * plug() - permits plugging a plugin-wrapper
-* lose() - unplugg a plugin-wrapper
-* getBasePluginWrapper() - just to get the plugin base object 
+* unplug() - unplugg a plugin-wrapper
+* getBasePluginWrapper() - just to get the plugin base object for use as wrapper 
+* getBasePlugin() - just to get the plugin base object for use without wrapper (direct call to driver)
+* Basket - get the Basket constructor
 
 ## Basket Interface
 
@@ -96,7 +98,8 @@ basket.find({key: 'name', value: 'john'}) //[{'id': 1, name: 'john'}, {'id': 2, 
 
 The Basket interface is extended with:
 
-* implements() - permits an instance to use a driver that implements a plugin-wrapper interface
+* implement() - allows an instance Basket to implement a driver for the plugin-wrapper interface
+* dispose() - removes from an instance Basket a driver implementation for the plugin-wrapper interface
 
 The package comes with a storage.js wrapper and a localforageDriver.js that permits a basket to be saved in browser databases with the [localforage](https://github.com/mozilla/localForage) package.
 
@@ -135,7 +138,7 @@ window.localforageDriver
   .then(function( value ) {
   
     lfDriver = value;
-    basket.implements(basket.ISTORAGE, lfDriver);
+    basket.implement(basket.ISTORAGE, lfDriver);
     
     //to save the basket
     basket.save()

@@ -44,8 +44,8 @@ describe('simplebasket-extend', function() {
     return window.simplebasket.plug(dummyWrapper);
   }
 
-  function loseDummy(force) {
-    return window.simplebasket.lose(dummyWrapper, force);
+  function unplugDummy(force) {
+    return window.simplebasket.unplug(dummyWrapper, force);
   }
 
   function isPlugged( value ) {
@@ -81,7 +81,7 @@ describe('simplebasket-extend', function() {
       isPlugged(true);
     });
     it('should lose plugin', function() {
-      (loseDummy()).should.equal(true);
+      (unplugDummy()).should.equal(true);
       isPlugged(false);
     });
     it('should plug plugin wrapper with direct call', function() {
@@ -89,7 +89,7 @@ describe('simplebasket-extend', function() {
       isPlugged(true);
     });
     it('should lose plugin', function() {
-      (loseDummy()).should.equal(true);
+      (unplugDummy()).should.equal(true);
       isPlugged(false);
     });
     it('should not allow plug with invalid object', function() {
@@ -99,7 +99,7 @@ describe('simplebasket-extend', function() {
       (window.simplebasket.plug(wrapperObj)).should.equal(false);
     });
   });
-  describe('#implements with wrapper==>', function() {
+  describe('#implement with wrapper==>', function() {
 
     before(function(){
       plugDummy(true);
@@ -129,77 +129,77 @@ describe('simplebasket-extend', function() {
     }
 
     it('should allow implement', function() {
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(true);
+      (basket.implement(basket.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true);
     });
     it('should not allow implement if already implemented', function() {
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(true);
+      (basket.implement(basket.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true);
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(false);
+      (basket.implement(basket.IDUMMY, new Dummy())).should.equal(false);
     });
     it('should not allow implement with invalid driver', function() {
       function InvalidDummy() {
       }
-      (basket.implements(basket.IDUMMY, new InvalidDummy())).should.equal(false);
+      (basket.implement(basket.IDUMMY, new InvalidDummy())).should.equal(false);
       isImplemented(false);
     });
     it('should return undefined if not implemented', function() {
       (basket.dummy === undefined).should.equal(true);
     });
-    it('should cancel implements', function() {
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(true);
+    it('should cancel implement', function() {
+      (basket.implement(basket.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true);
-      (basket.prevent(basket.IDUMMY)).should.equal(true);
+      (basket.dispose(basket.IDUMMY)).should.equal(true);
       isImplemented(false);
     });
-    it('should not allow use if instance does not implements', function() {
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(true);
+    it('should not allow use if instance does not implement', function() {
+      (basket.implement(basket.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true);
 
       var basket2 = window.simplebasket.create();
       isImplemented(false, basket2);
     });
     it('should allow various implementations', function() {
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(true);
+      (basket.implement(basket.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true);
       var basket2 = window.simplebasket.create();
-      (basket2.implements(basket2.IDUMMY, new Dummy())).should.equal(true);
+      (basket2.implement(basket2.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true, basket2);
     });
     it('should not allow new implementation after "weak" lose', function() {
-      loseDummy();
-      (basket.implements(plugin, new Dummy())).should.equal(false);
+      unplugDummy();
+      (basket.implement(plugin, new Dummy())).should.equal(false);
       isImplemented(false);
     });
     it('should force lose', function() {
       (Object.prototype.hasOwnProperty.call(window.simplebasket.Basket.prototype, dummyWrapper.type)).should.equal(true);
-      loseDummy(true);
+      unplugDummy(true);
       (Object.prototype.hasOwnProperty.call(window.simplebasket.Basket.prototype, dummyWrapper.type)).should.equal(false);
     });
     it('should mantain implementation on instances after "weak" lose', function() {
       plugDummy(true);
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(true);
+      (basket.implement(basket.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true);
-      loseDummy();
+      unplugDummy();
       isImplemented(true);
     });
-    it('should allow prevent on instance after "weak" lose', function() {
-      loseDummy(true);
+    it('should allow dispose on instance after "weak" lose', function() {
+      unplugDummy(true);
       plugDummy(true);
 
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(true);
+      (basket.implement(basket.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true);
-      loseDummy();
+      unplugDummy();
       isImplemented(true);
-      (basket.prevent(plugin)).should.equal(true);
+      (basket.dispose(plugin)).should.equal(true);
       isImplemented(false);
     });
   });
 
-  describe('#implements without wrapper==>', function() {
+  describe('#implement without wrapper==>', function() {
 
     before(function(){
-      loseDummy(true);
+      unplugDummy(true);
       plugDummy();
     });
     beforeEach(function() {
@@ -227,53 +227,53 @@ describe('simplebasket-extend', function() {
     }
 
     it('should allow implement', function() {
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(true);
+      (basket.implement(basket.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true);
     });
     it('should not allow implement if already implemented', function() {
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(true);
+      (basket.implement(basket.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true);
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(false);
+      (basket.implement(basket.IDUMMY, new Dummy())).should.equal(false);
     });
     it('should not allow implement with invalid driver', function() {
       function InvalidDummy() {
       }
-      (basket.implements(basket.IDUMMY, new InvalidDummy())).should.equal(false);
+      (basket.implement(basket.IDUMMY, new InvalidDummy())).should.equal(false);
       isImplemented(false);
     });
     it('should return undefined if not implemented', function() {
       (basket.dummy === undefined).should.equal(true);
     });
-    it('should cancel implements', function() {
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(true);
+    it('should cancel implement', function() {
+      (basket.implement(basket.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true);
-      (basket.prevent(basket.IDUMMY)).should.equal(true);
+      (basket.dispose(basket.IDUMMY)).should.equal(true);
       isImplemented(false);
     });
     it('should not allow use if instance does not implements', function() {
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(true);
+      (basket.implement(basket.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true);
 
       var basket2 = window.simplebasket.create();
       isImplemented(false, basket2);
     });
     it('should allow various implementations', function() {
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(true);
+      (basket.implement(basket.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true);
       var basket2 = window.simplebasket.create();
-      (basket2.implements(basket2.IDUMMY, new Dummy())).should.equal(true);
+      (basket2.implement(basket2.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true, basket2);
     });
     it('should not allow new implementation after "weak" lose', function() {
-      loseDummy();
-      (basket.implements(plugin, new Dummy())).should.equal(false);
+      unplugDummy();
+      (basket.implement(plugin, new Dummy())).should.equal(false);
       isImplemented(false);
     });
     it('should mantain implementation on instances after "weak" lose', function() {
       plugDummy();
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(true);
+      (basket.implement(basket.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true);
-      loseDummy();
+      unplugDummy();
       isImplemented(true);
     });
   });

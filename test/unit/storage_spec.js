@@ -34,14 +34,8 @@ describe('storage wrapper plugin', function() {
 
   describe('#simplebasket==>', function() {
     it('should be extended with storage wrapper', function() {
-      basket.save();
-
       var oproto = Object.getPrototypeOf(basket);
       (Object.prototype.hasOwnProperty.call(oproto, 'ISTORAGE')).should.equal(true);
-      (Object.prototype.hasOwnProperty.call(oproto, 'save')).should.equal(true);
-      (Object.prototype.hasOwnProperty.call(oproto, 'load')).should.equal(true);
-      (Object.prototype.hasOwnProperty.call(oproto, 'clear')).should.equal(true);
-
     });
   });
 

@@ -30,7 +30,7 @@ describe('simplebasket', function() {
 
   describe('#create==>', function() {
 
-    function useCaseOptionsUndefined(val) {
+    function useCaseOptionsUndefined( val ) {
       var b = window.simplebasket.create(val);
       (b.getOptions().uniqueKey === undefined).should.equal(true);
     }
@@ -40,18 +40,18 @@ describe('simplebasket', function() {
       (b.getOptions().uniqueKey === undefined).should.equal(true);
     });
     it('should create but silent invalid options', function() {
-      useCaseOptionsUndefined({invalid:'test'});
+      useCaseOptionsUndefined({invalid: 'test'});
       useCaseOptionsUndefined(1);
       useCaseOptionsUndefined(true);
       useCaseOptionsUndefined({});
       useCaseOptionsUndefined('test');
       useCaseOptionsUndefined(null);
       useCaseOptionsUndefined(undefined);
-      useCaseOptionsUndefined({uniqueKey:{}});
-      useCaseOptionsUndefined({uniqueKey:1});
-      useCaseOptionsUndefined({uniqueKey:true});
-      useCaseOptionsUndefined({uniqueKey:null});
-      useCaseOptionsUndefined({uniqueKey:undefined});
+      useCaseOptionsUndefined({uniqueKey: {}});
+      useCaseOptionsUndefined({uniqueKey: 1});
+      useCaseOptionsUndefined({uniqueKey: true});
+      useCaseOptionsUndefined({uniqueKey: null});
+      useCaseOptionsUndefined({uniqueKey: undefined});
     });
     it('should create with valid option', function() {
       var b = window.simplebasket.create({uniqueKey: 'key'});
@@ -80,12 +80,16 @@ describe('simplebasket', function() {
       (b.count()).should.equal(1);
       (b.getAll()[0].item).should.equal(1);
 
-      b.add({o: itemkey, item: 3},{o: itemkey, item: 4},{o: itemkey, item: 5});
+      b.add({o: itemkey, item: 3}, {o: itemkey, item: 4}, {o: itemkey, item: 5});
       (b.count()).should.equal(1);
       (b.getAll()[0].item).should.equal(1);
 
       b = window.simplebasket.create({uniqueKey: 'o'});
-      b.add([{o: itemkey, item: 1},{o: 100, item: 2},{o: itemkey, item: 3}]);
+      b.add([
+        {o: itemkey, item: 1},
+        {o: 100, item: 2},
+        {o: itemkey, item: 3}
+      ]);
       (b.count()).should.equal(2);
       (b.getAll()[0].item).should.equal(1);
       (b.getAll()[1].item).should.equal(2);
@@ -496,158 +500,3 @@ describe('simplebasket', function() {
 
 });
 
-
-describe('simplebasket-extend', function() {
-  'use strict';
-  var basket;
-
-  //Error mocha/phantomjs TypeError: JSON.stringify cannot serialize cyclic structures.
-  //https://github.com/metaskills/mocha-phantomjs/issues/104
-  var stringify = JSON.stringify;
-  before(function() {
-    JSON.stringify = function( obj ) {
-      var seen = [];
-
-      return stringify(obj, function( key, val ) {
-        if ( typeof val === 'object' ) {
-          if ( seen.indexOf(val) >= 0 ) {
-            return;
-          }
-          seen.push(val);
-        }
-        return val;
-      });
-    };
-  });
-  after(function() {
-    JSON.stringify = stringify;
-  });
-
-  function isFunction( obj ) {
-    return {}.toString.call(obj) === '[object Function]';
-  }
-
-  describe('#plugins==>', function() {
-    var called = false;
-
-    beforeEach(function() {
-      basket = window.simplebasket.create();
-    });
-
-    function Dummy() {
-      this.name = 'dummy';
-      this.dummyFunction = function() {
-        called = true;
-      };
-    }
-    function extendDummy(){
-      var dummyWrapper = window.simplebasket.getBasePluginWrapper('dummy');
-      dummyWrapper.dummyFunction = function() {
-        this.dummy.dummyFunction();
-      };
-      return window.simplebasket.plug(dummyWrapper);
-    }
-    function loseDummy(){
-      return window.simplebasket.lose('dummy');
-    }
-
-    it('should not allow extend with invalid interface', function() {
-      function Dummy() {
-
-      }
-      var wrapperObj = new Dummy();
-
-      (window.simplebasket.plug(wrapperObj)).should.equal(false);
-    });
-    it('should extend with plugin', function() {
-      extendDummy();
-
-      (basket.IDUMMY !== undefined).should.equal(true);
-      (Object.prototype.hasOwnProperty.call(basket, 'dummyFunction')).should.equal(false);
-      (basket.dummyFunction !== undefined).should.equal(true);
-      (isFunction(basket.dummyFunction)).should.equal(true);
-
-      basket.dummyFunction();
-      (called).should.equal(false);
-
-      var basket2 = window.simplebasket.create();
-      basket2.dummyFunction();
-      (called).should.equal(false);
-    });
-    it('should lose plugin', function() {
-      loseDummy();
-
-      (basket.IDUMMY !== undefined).should.equal(false);
-      (basket.dummyFunction !== undefined).should.equal(false);
-      (isFunction(basket.dummyFunction)).should.equal(false);
-
-    });
-    it('should allow implement after extend', function() {
-      extendDummy();
-
-      basket.implements(basket.IDUMMY, new Dummy());
-      (Object.prototype.hasOwnProperty.call(basket, 'dummyFunction')).should.equal(true);
-      basket.dummyFunction();
-      (called).should.equal(true);
-
-    });
-    it('should not allow use if instance dows not implements', function() {
-      called = false;
-      var basket2 = window.simplebasket.create();
-      (Object.prototype.hasOwnProperty.call(basket2, 'dummyFunction')).should.equal(false);
-      basket2.dummyFunction();
-      (called).should.equal(false);
-    });
-    it('should not allow new implementation after lose', function() {
-      loseDummy();
-
-      basket.implements(basket.IDUMMY, new Dummy());
-
-      (Object.prototype.hasOwnProperty.call(basket, 'dummyFunction')).should.equal(false);
-
-      (basket.dummyFunction===undefined).should.equal(true);
-
-    });
-    it('should not allow extend when already extended', function() {
-      (extendDummy()).should.equal(true);
-
-      (extendDummy()).should.equal(false);
-
-    });
-    it('should not implement when already implemented', function() {
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(true);
-      (basket.implements(basket.IDUMMY, new Dummy())).should.equal(false);
-    });
-    it('should allow implementation by diferent instances', function() {
-
-      basket.implements(basket.IDUMMY, new Dummy());
-      (Object.prototype.hasOwnProperty.call(basket, 'dummyFunction')).should.equal(true);
-      basket.dummyFunction();
-      (called).should.equal(true);
-
-      called = false;
-
-      var basket2 = window.simplebasket.create();
-      basket2.implements(basket.IDUMMY, new Dummy());
-      (Object.prototype.hasOwnProperty.call(basket2, 'dummyFunction')).should.equal(true);
-      basket2.dummyFunction();
-      (called).should.equal(true);
-
-    });
-    it('should maintain actual implementation by instance after lose', function() {
-      basket.implements(basket.IDUMMY, new Dummy());
-      (Object.prototype.hasOwnProperty.call(basket, 'dummyFunction')).should.equal(true);
-      basket.dummyFunction();
-      (called).should.equal(true);
-
-      loseDummy();
-
-      called = false;
-      basket.dummyFunction();
-      (called).should.equal(true);
-    });
-
-  });
-
-
-});

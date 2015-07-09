@@ -241,6 +241,7 @@
             else {
               _addIfequal(valueIn, value, it);
             }
+            //TODO: support for only first match
             //            if ( result.length ) {
             //              break;
             //            }
@@ -265,100 +266,150 @@
 
   }
 
-
   var noop = function() {
   };
 
-  function BasePluginWrapper( type ) {
-    this.type = typeof type === 'string' ? type : '';
+  function validName( name ) {
+    return typeof name === 'string' && (/^[a-zA-Z0-9_$]+$/).test(name);
   }
-  //holds plugin interfaces supportted
-  var pluginInterfaceType = {};
-  //holds plugin interfaces definition
-  var pluginInterfaceDefinition = {};
+
   /**
-   * Allows a Basket to implement a driver for the plugin-wrapper interface
-   * @param wrapper - the plugin-wrapper pluged to simplebasket
-   * @param driver - the implementation object
-   * @returns {boolean}
+   * BasePluginWrapper
+   * A plugin wrapper must be an instance of BasePluginWrapper
+   * @param type {String}
+   * @param directCall {Boolean}
+   * @constructor
    */
-  Basket.prototype.implements = function( wrapper, driver ) {
+  function BasePluginWrapper( type, directCall ) {
+    //this.type = typeof type === 'string' ? type : '';
+    Object.defineProperty(this, 'type', {
+      value: validName(type) ? type : undefined
+    });
+    Object.defineProperty(this, 'directCall', {
+      value: typeof directCall === 'undefined' || typeof directCall === 'boolean' ? !!directCall : undefined
+    });
+    if ( this.type === undefined || this.directCall === undefined ) {
+      return {};
+    }
+  }
+
+  //holds plugin wrapper supportted
+  var pluginWrapper = {};
+  //holds plugin wrapper interface definition
+  var pluginWrapperDefinition = {};
+
+  /**
+   * implements
+   * Allows an instance Basket to implement a driver for the plugin-wrapper interface
+   * @param wrapperName {String} - the plugin-wrapper pluged to simplebasket
+   * @param driver {Object} - the implementation object
+   * @returns {Boolean}
+   */
+  Basket.prototype.implements = function( wrapperName, driver ) {
 
     if ( this instanceof Basket === false ) {
       return false;
     }
     //test if is invalid interface
-    if ( !pluginInterfaceType[wrapper] ) {
+    if ( !pluginWrapper[wrapperName] ) {
       return false;
     }
-    //test if is invalid driver.name
+    //test if is invalid driver.name ?necessary?
     if ( !(/^[a-zA-Z0-9_$]+$/).test(driver.name) ) {
       return false;
     }
     //instance already implements interface
-    if ( this[wrapper] ) {
+    var INAME = wrapperName.toUpperCase();
+    if ( _hasOwn(this, INAME) ) {
       return false;
     }
-    var Idefinition = pluginInterfaceDefinition[wrapper];
+
+    var Idefinition = pluginWrapperDefinition[wrapperName];
 
     //verifies driver has keys from definition
     for ( var key in Idefinition ) {
       if ( _hasOwn(driver, key) === false ) {
         return false;
       }
-      if ( isFunction(Idefinition[key]) && isFunction(driver[key]) === false ) {
+      if ( isFunction(driver[key]) === false ) {
         return false;
       }
     }
-    //set a key=interface type ex: instance.storage
-    //just for mark that the instance already implements the interface
-    this[wrapper] = driver;
+
+    if ( pluginWrapper[wrapperName].directCall === false ) {
+      if ( !_hasOwn(Basket.prototype, wrapperName) ) {
+        Object.defineProperty(Basket.prototype, wrapperName, {
+          set: function() {
+          },
+          get: function() {
+            return this[INAME] ? driver : undefined;
+          },
+          configurable: true
+        });
+      }
+    }
 
     var self = this;
 
     function fcaller( f ) {
       return function() {
-        //f is the prototype method for a key
+        //f is the method to call (wrapper.method or driver.method)
         //returns noop or the wrapper function for key
-        return f.call(self).apply(self, arguments);
+        /*return f.call(self).apply(self, arguments);*/
+        return f.apply(self, arguments);
       };
     }
+
+    var virtualDefiniton = {};
 
     //foreach method in plugin interface definition
     //sets an instance method
     for ( key in Idefinition ) {
-      if ( isFunction(Idefinition[key]) ) {
-        //get the prototype method for key
-        var f = Basket.prototype[key];
-        this[key] = fcaller(f);
-      }
+      /*if ( isFunction(Idefinition[key]) ) {*/
+      var f = pluginWrapper[wrapperName].directCall ? driver[key] : Idefinition[key];
+      Object.defineProperty(this, key, { value: fcaller(f), configurable: true });
+      virtualDefiniton[key] = noop;
+      /*}*/
     }
+    Object.defineProperty(this, INAME, { value: virtualDefiniton, configurable: true});
 
     return true;
   };
 
-  function _extend( obj ) {
+  /**
+   * prevent
+   * Removes from an instance Basket a driver implementation for the plugin-wrapper interface
+   * @param wrapperName - the plugin-wrapper pluged to simplebasket
+   * @returns {Boolean}
+   */
+  Basket.prototype.prevent = function( wrapperName ) {
+    if ( this instanceof Basket === false ) {
+      return false;
+    }
+    var INAME = wrapperName.toUpperCase();
 
-    var funcWrapperKey = function( obj, key ) {
-      return function() {
-        if ( !_hasOwn(this, obj.type) ) {
-          return noop;
-        }
-        return obj[key];
-      };
-    };
-    for ( var key in obj ) {
-      if ( _hasOwn(obj, key) && isFunction(obj[key]) ) {
-        pluginInterfaceDefinition[obj.type][key] = noop;
-        Basket.prototype[key] = funcWrapperKey(obj, key);
+    if ( !_hasOwn(this, INAME) ) {
+      return false;
+    }
+
+    var Idefinition = this[INAME];
+
+    for ( var key in Idefinition ) {
+      if ( _hasOwn(this, key) ) {
+        delete this[key];
       }
     }
-  }
+    delete this[INAME];
+
+    return true;
+  };
 
   /////////////
   var objExports = {};
 
   Object.defineProperty(objExports, 'Basket', {
+    set: function() {
+    },
     get: function() {
       return Basket;
     }
@@ -366,7 +417,7 @@
 
   /**
    * Create a Basket
-   * @param options
+   * @param options {{*}} Options: uniqueKey {String} indicates a unique key for items objects in the basket
    * @returns {Basket}
    */
   objExports.create = function( options ) {
@@ -379,63 +430,79 @@
   };
   /**
    * Plug a plugin-wrapper
-   * @param obj a BasePluginWrapper to plug (see example: https://github.com/borntorun/simple-basket/blob/master/src/plugin-wrapper/storage.js)
-   * @returns {boolean}
+   * @param oBasePluginWrapper {BasePluginWrapper} to plug (see example: https://github.com/borntorun/simple-basket/blob/master/src/plugin-wrapper/storage.js)
+   * @returns {Boolean}
    */
-  objExports.plug = function( obj ) {
-    if ( !(obj instanceof BasePluginWrapper) ) {
+  objExports.plug = function( oBasePluginWrapper ) {
+    var key;
+
+    if ( !(oBasePluginWrapper instanceof BasePluginWrapper) ) {
       return false;
     }
-    if ( pluginInterfaceType[obj.type] ) {
+    //already plugged
+    if ( pluginWrapper[oBasePluginWrapper.type] ) {
       return false;
     }
 
-    for ( var key in obj ) {
-      if ( !_hasOwn(obj, key) || _hasOwn(Basket.prototype, key) ) {
+    for ( key in oBasePluginWrapper ) {
+      if ( !_hasOwn(oBasePluginWrapper, key) || _hasOwn(Basket.prototype, key) ) {
         return false;
       }
     }
 
-    pluginInterfaceType[obj.type] = obj.type;
-    pluginInterfaceDefinition[obj.type] = {name: 'string'};
-    Basket.prototype['I' + obj.type.toUpperCase()] = pluginInterfaceType[obj.type];
-    _extend(obj);
+    pluginWrapper[oBasePluginWrapper.type] = oBasePluginWrapper;
+    pluginWrapperDefinition[oBasePluginWrapper.type] = {};
+    Basket.prototype['I' + oBasePluginWrapper.type.toUpperCase()] = oBasePluginWrapper.type;
+
+    for ( key in oBasePluginWrapper ) {
+      if ( _hasOwn(oBasePluginWrapper, key) && isFunction(oBasePluginWrapper[key]) ) {
+        pluginWrapperDefinition[oBasePluginWrapper.type][key] = oBasePluginWrapper[key];
+      }
+    }
 
     return true;
   };
   /**
    * Remove a plugged object
-   * @param name
+   * @param oBasePluginWrapper {BasePluginWrapper} to unplug
+   * @param force {Boolean} Clear all traces from wrapper/driver (after lose call, instances already implementing the plugin-wrapper with some driver can still work and call the driver; by forcing we are eliminating that possibility)
    */
-  objExports.lose = function( name ) {
-    var obj = pluginInterfaceDefinition[name];
-    for ( var key in obj ) {
-      if ( _hasOwn(obj, key) && isFunction(obj[key]) && _hasOwn(Basket.prototype, key) ) {
-        delete Basket.prototype[key];
-      }
-    }
-    delete pluginInterfaceType[name];
+  objExports.lose = function( oBasePluginWrapper, force ) {
+    var name = oBasePluginWrapper.type;
+    delete pluginWrapper[name];
+    delete pluginWrapperDefinition[name];
     delete Basket.prototype['I' + name.toUpperCase()];
-    delete pluginInterfaceDefinition[name];
+    if ( force ) {
+      delete Basket.prototype[oBasePluginWrapper.type];
+    }
+    return true;
   };
   /**
    * Get an instance for base plugin
+   * using a wrapper for the driver implementation
    * @param name
    * @returns {BasePluginWrapper}
    */
   objExports.getBasePluginWrapper = function( name ) {
-    return new BasePluginWrapper(name);
+    return new BasePluginWrapper(name, false);
+  };
+  /**
+   * Get an instance for base plugin
+   * without (directCall) using a wrapper for the driver implementation
+   * @param name
+   * @returns {BasePluginWrapper}
+   */
+  objExports.getBasePlugin = function( name ) {
+    return new BasePluginWrapper(name, true);
   };
   return objExports;
 
+  /////////
   function isArray( obj ) {
     return Object.prototype.toString.call(obj) === '[object Array]';
   }
+
   function isFunction( obj ) {
     return {}.toString.call(obj) === '[object Function]';
   }
 });
-
-
-
-

@@ -53,6 +53,9 @@
 
   simplebasket.plug(iObj);
 
+  return simplebasket;
+
+  //////////
   function callCallback( promise, callback ) {
     //call function callback on promise resolve/reject
     if ( callback ) {
@@ -63,8 +66,6 @@
       });
     }
   }
-
-  return simplebasket;
 
 
 });

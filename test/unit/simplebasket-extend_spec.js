@@ -166,24 +166,25 @@ describe('simplebasket-extend', function() {
       (basket2.implement(basket2.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true, basket2);
     });
-    it('should not allow new implementation after "weak" lose', function() {
+    it('should not allow new implementation after "weak" unplug', function() {
       unplugDummy();
       (basket.implement(plugin, new Dummy())).should.equal(false);
       isImplemented(false);
     });
-    it('should force lose', function() {
+    it('should force unplug', function() {
+      plugDummy(true);
       (Object.prototype.hasOwnProperty.call(window.simplebasket.Basket.prototype, dummyWrapper.type)).should.equal(true);
       unplugDummy(true);
       (Object.prototype.hasOwnProperty.call(window.simplebasket.Basket.prototype, dummyWrapper.type)).should.equal(false);
     });
-    it('should mantain implementation on instances after "weak" lose', function() {
+    it('should mantain implementation on instances after "weak" unplug', function() {
       plugDummy(true);
       (basket.implement(basket.IDUMMY, new Dummy())).should.equal(true);
       isImplemented(true);
       unplugDummy();
       isImplemented(true);
     });
-    it('should allow dispose on instance after "weak" lose', function() {
+    it('should allow dispose on instance after "weak" unplug', function() {
       unplugDummy(true);
       plugDummy(true);
 

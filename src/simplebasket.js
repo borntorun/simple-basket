@@ -468,6 +468,12 @@
    * @param force {Boolean} Clear all traces from wrapper/driver (after lose call, instances already implementing the plugin-wrapper with some driver can still work and call the driver; by forcing we are eliminating that possibility)
    */
   objExports.unplug = function( oBasePluginWrapper, force ) {
+    if ( !(oBasePluginWrapper instanceof BasePluginWrapper) ) {
+      return false;
+    }
+    if ( pluginWrapper[oBasePluginWrapper.type] !== oBasePluginWrapper ) {
+      return false;
+    }
     var name = oBasePluginWrapper.type;
     delete pluginWrapper[name];
     delete pluginWrapperDefinition[name];

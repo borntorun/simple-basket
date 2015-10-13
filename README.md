@@ -185,5 +185,3 @@ License
 Copyright (c) 2015 João Carvalho
 
 Licensed under the MIT License
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/borntorun/simple-basket/trend.png)](https://bitdeli.com/free "Bitdeli Badge")

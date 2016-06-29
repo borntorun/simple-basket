@@ -265,12 +265,13 @@
 
     function callCallback( promise, callback ) {
       //call function callback on promise resolve/reject
-      if ( callback ) {
+      if ( isFunction(callback) ) {
         promise.then(function( data ) {
           callback(null, data);
         }, function( err ) {
           callback(err);
         });
+
       }
     }
 
@@ -281,6 +282,9 @@
 
     function isHashObject( obj ) {
       return (!!obj && typeof obj === 'object' && (obj.constructor === undefined || obj.constructor === {}.constructor));
+    }
+    function isFunction( obj ) {
+      return {}.toString.call(obj) === '[object Function]';
     }
   }
 

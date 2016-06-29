@@ -95,7 +95,7 @@ describe('localforageDriver', function() {
           doneTry(done, function() {
             (opt.name).should.equal('app-localforageDriver');
             (opt.storeName).should.equal('store');
-            console.log(opt.description);
+            //console.log(opt.description);
             (opt.description).should.equal('');
             (opt.key).should.equal('key');
           });
@@ -220,6 +220,43 @@ describe('localforageDriver', function() {
         });
 
     });
+    it('should call callback on load', function( done ) {
+      var callbackWasCalled = false;
+      var callbackData;
+      var theCallback = function(err, data) {
+        callbackWasCalled = true;
+        callbackData = data;
+      };
+      localforageDriver.save(999)
+        .then(function() {
+          localforageDriver.load(theCallback)
+            .then(function( /*data*/ ) {
+              doneTry(done, function() {
+                (callbackWasCalled).should.equal(true);
+                (callbackData).should.equal(999);
+              });
+            });
+        })
+        .catch(function( error ) {
+          done(error);
+        });
+    });
+    it('should not call callback on load as it is not a function', function( done ) {
+      var callbackWasCalled = false;
+      var theCallback = 1;
+      localforageDriver.save(999)
+        .then(function() {
+          localforageDriver.load(theCallback)
+            .then(function( /*data*/ ) {
+              doneTry(done, function() {
+                (callbackWasCalled).should.equal(false);
+              });
+            });
+        })
+        .catch(function( error ) {
+          done(error);
+        });
+    });
     it('should not allow save before config', function( done ) {
 
       window.localforageDriver.create().then(function( value ) {
@@ -276,6 +313,27 @@ describe('localforageDriver', function() {
             (data).should.equal(valueToSave);
             var theValueSaved = window.sessionStorage.getItem('app-localforageDriver/key');
             (theValueSaved).should.equal(JSON.stringify(valueToSave));
+          });
+        })
+        .catch(function( error ) {
+          done(error);
+        });
+    });
+    it('should save value and call callback', function( done ) {
+      var callbackWasCalled = false;
+      var callbackData;
+      var theCallback = function(err, data) {
+        callbackWasCalled = true;
+        callbackData = data;
+      };
+      localforageDriver.save(valueToSave, theCallback)
+        .then(function( data ) {
+          doneTry(done, function() {
+            (data).should.equal(valueToSave);
+            var theValueSaved = window.sessionStorage.getItem('app-localforageDriver/key');
+            (theValueSaved).should.equal(JSON.stringify(valueToSave));
+            (callbackWasCalled).should.equal(true);
+            (callbackData).should.equal(valueToSave);
           });
         })
         .catch(function( error ) {

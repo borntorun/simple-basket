@@ -12,22 +12,30 @@
 
     <script src="/bower_components/lodash/lodash.js"></script>
 
-
-
-    <!-- Test runner -->
-    <script src="/test/unit/runner.js"></script>
-
     <!-- simplebasket -->
     <script src="/dist/simplebasket.min.js"></script>
 
     <!-- storage plugin - complete bundle -->
     <script src="/dist/plugins/storage/storage-localforage.min.js"></script>
 
-    <!-- specs -->
-    <script src="/test/unit/storage_spec.js"></script>
+
 
 </head>
 <body>
-<div id="mocha"></div>
+    <div id="mocha"></div>
+
+
+    <script>mocha.setup('bdd')</script>
+
+    <!-- specs -->
+    <script src="/test/unit/storage_spec.js"></script>
+
+    <script>
+        mocha.checkLeaks();
+        //mocha.globals(['jQuery']);
+        if (navigator.userAgent.indexOf('PhantomJS') === -1) {
+            mocha.run();
+        }
+    </script>
 </body>
 </html>

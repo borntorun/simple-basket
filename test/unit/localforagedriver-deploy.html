@@ -14,17 +14,25 @@
 
     <script src="/bower_components/localforage-sessionstoragewrapper/src/localforage-sessionstoragewrapper.js"></script>
 
-    <!-- Test runner -->
-    <script src="/test/unit/runner.js"></script>
-
     <script src="/dist/plugins/storage/drivers/localforageDriver.min.js"></script>
     <!--<script src="/dist/plugins/storage/drivers/with-promise-polyfill/localforageDriver.min.js"></script>-->
 
-    <!-- specs -->
-    <script src="/test/unit/localforagedriver_spec.js"></script>
+
+
 
 </head>
 <body>
-<div id="mocha"></div>
+    <div id="mocha"></div>
+    <script>mocha.setup('bdd')</script>
+
+    <!-- specs -->
+    <script src="/test/unit/localforagedriver_spec.js"></script>
+    <script>
+        mocha.checkLeaks();
+        //mocha.globals(['jQuery']);
+        if (navigator.userAgent.indexOf('PhantomJS') === -1) {
+            mocha.run();
+        }
+    </script>
 </body>
 </html>

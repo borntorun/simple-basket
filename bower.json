@@ -33,14 +33,14 @@
     "Gruntfile.js"
   ],
   "devDependencies": {
-    "mocha": "~2.2.5",
-    "should": "~6.0.3",
-    "requirejs": "~2.1.18",
-    "es6-promise": "~2.2.0",
+    "mocha": "~2.5.3",
+    "should": "~9.0.2",
+    "requirejs": "~2.2.0",
+    "es6-promise": "~3.2.2",
     "localforage": "1.2.3",
     "localforage-sessionstoragewrapper": "1.0.1"
   },
   "dependencies": {
-    "lodash": "~3.9.3"
+    "lodash": "~4.13.1"
   }
 }

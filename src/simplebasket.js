@@ -93,7 +93,7 @@
       if ( isArray(value) === false ) {
         return;
       }
-      this.add.apply(this, _.clone(value, true));
+      this.add.apply(this, _.cloneDeep(value, true));
       return this;
     };
     /**
@@ -102,7 +102,7 @@
      * @returns {Array}
      */
     this.getClone = function() {
-      return _.clone(items, true);
+      return _.cloneDeep(items, true);
     };
     /**
      * Return all items in basket

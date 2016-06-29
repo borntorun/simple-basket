@@ -1,8 +1,7 @@
-<!doctype html>
 <html>
-<head>
+  <head>
     <meta charset="utf-8">
-    <title>simplebasket Tests!</title>
+    <title>Mocha Tests</title>
 
     <link rel="stylesheet" href="/bower_components/mocha/mocha.css">
 
@@ -14,16 +13,21 @@
 
     <script src="/bower_components/localforage-sessionstoragewrapper/src/localforage-sessionstoragewrapper.js"></script>
 
-    <!-- Test runner -->
-    <script src="/test/unit/runner.js"></script>
-
     <script src="/src/drivers/localforageDriver.js"></script>
+  </head>
+  <body>
+    <div id="mocha"></div>
 
-    <!-- specs -->
+
+    <script>mocha.setup('bdd')</script>
+
     <script src="/test/unit/localforagedriver_spec.js"></script>
-
-</head>
-<body>
-<div id="mocha"></div>
-</body>
+    <script>
+      mocha.checkLeaks();
+      //mocha.globals(['jQuery']);
+      if (navigator.userAgent.indexOf('PhantomJS') === -1) {
+        mocha.run();
+      }
+    </script>
+  </body>
 </html>

@@ -356,7 +356,9 @@ module.exports = function (grunt) {
     mocha: {
       unit: {
         options: {
+          log: true,
           logErrors: true,
+          run: true,
           urls: [
             'http://localhost:8888/test/unit/simplebasket.html',
             'http://localhost:8888/test/unit/localforagedriver.html',

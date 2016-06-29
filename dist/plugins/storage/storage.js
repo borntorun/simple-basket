@@ -58,13 +58,16 @@
   //////////
   function callCallback( promise, callback ) {
     //call function callback on promise resolve/reject
-    if ( callback ) {
+    if ( isFunction(callback) ) {
       promise.then(function( data ) {
         callback(null, data);
       }, function( err ) {
         callback(err);
       });
     }
+  }
+  function isFunction( obj ) {
+    return {}.toString.call(obj) === '[object Function]';
   }
 
 

@@ -1,15 +1,16 @@
-module.exports = function( grunt ) {
+module.exports = function (grunt) {
   var semver = require('semver'),
     child_process = require('child_process'),
     format = require('util').format,
-    readlineSync = require('readline-sync');
+    readlineSync = require('readline-sync'),
+    serveStatic = require('serve-static');
+
+
 
   require('load-grunt-tasks')(grunt);
-
   //need this to get version... dont work in grunt-sed with <%= pkg.version %>!!! did not understand why!
   var pk = grunt.file.readJSON('package.json'),
     gitVersion;
-
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     buildDir: 'dist',
@@ -43,7 +44,7 @@ module.exports = function( grunt ) {
     sed: {
       version: {
         pattern: '%%VERSION%%',
-        replacement: function() {
+        replacement: function () {
           return grunt.option('tag') || pk.version;
         },
         recursive: true,
@@ -96,7 +97,7 @@ module.exports = function( grunt ) {
         options: {
           banner: '<%= banner %>',
           mangle: {
-            except: [ 'Basket', 'BasePluginWrapper']
+            except: ['Basket', 'BasePluginWrapper']
           }
         },
         files: {
@@ -221,7 +222,6 @@ module.exports = function( grunt ) {
             ' * @version   2.3.0',
             ' */\n',
           ].join('\n')
-
         },
         files: {
           '<%= buildDir %>/plugins/storage/drivers/with-promise-polyfill/localforageDriver.min.js': ['<%= buildDir %>/plugins/storage/drivers/with-promise-polyfill/localforageDriver.js']
@@ -233,13 +233,12 @@ module.exports = function( grunt ) {
         stdout: true,
         stderr: true
       },
-
       /**
        * Get remote repos on git and set grunt.option('remote');
        * If more than one user is able to choose which
        */
       remote: {
-        command: function( ok ) {
+        command: function (ok) {
           return ok === 'true' ?
             'gruntlistremotes=$(git remote);printf "$gruntlistremotes"'
             :
@@ -250,27 +249,26 @@ module.exports = function( grunt ) {
           stdout: false,
           stderr: true,
           stdin: false,
-          callback: function( error, stdout, stderr, cb ) {
-            if ( error !== 0 ) {
+          callback: function (error, stdout, stderr, cb) {
+            if (error !== 0) {
               grunt.log.write('Error:', error, '\n');
               cb(false);
             }
             else {
               var remotes = stdout.split('\n');
-              if ( remotes.length === 1 ) {
+              if (remotes.length === 1) {
                 grunt.option('remote', remotes[0]);
                 cb();
                 return;
               }
-              remotes.forEach(function( item, idx, alist ) {
-                alist[idx] = [ '[', idx + 1, ']-', item].join('');
+              remotes.forEach(function (item, idx, alist) {
+                alist[idx] = ['[', idx + 1, ']-', item].join('');
               });
-
               var resp = 0;
               grunt.log.writeln(format('%s ', '\n\nThere are more than 1 remote associate with this repo, please choose the one to push into.\n\n' + remotes));
               while ( isNaN(resp) || resp === 0 || resp > remotes.length ) {
                 resp = readlineSync.question('\nYour choice?');
-                if ( resp === '' ) {
+                if (resp === '') {
                   cb(false);
                   return;
                 }
@@ -280,7 +278,6 @@ module.exports = function( grunt ) {
               //grunt.log.write(grunt.option('remote'));
               cb();
             }
-
           }
         }
       },
@@ -289,7 +286,7 @@ module.exports = function( grunt ) {
        * (called from task release)
        */
       tag: {
-        command: function( ok ) {
+        command: function (ok) {
           return ok === 'true' ?
             'git tag -a v<%= grunt.option("tag") %> -m \'Version <%= grunt.option("tag") %>\''
             :
@@ -300,8 +297,8 @@ module.exports = function( grunt ) {
           stdout: false,
           stderr: true,
           stdin: false,
-          callback: function( error, stdout, stderr, cb ) {
-            if ( error !== 0 ) {
+          callback: function (error, stdout, stderr, cb) {
+            if (error !== 0) {
               grunt.log.write('Error:', error, '\n');
               cb(false);
             }
@@ -314,7 +311,7 @@ module.exports = function( grunt ) {
        * (called from task push)
        */
       push: {
-        command: function( ok ) {
+        command: function (ok) {
           return ok === 'true' ?
             'git push <%= grunt.option("remote") %> master --tags'
             :
@@ -324,8 +321,8 @@ module.exports = function( grunt ) {
           stdout: false,
           stderr: true,
           stdin: false,
-          callback: function( error, stdout, stderr, cb ) {
-            if ( error !== 0 ) {
+          callback: function (error, stdout, stderr, cb) {
+            if (error !== 0) {
               grunt.log.write('Error:', error, '\n');
               cb(false);
             }
@@ -347,14 +344,12 @@ module.exports = function( grunt ) {
       test_git_is_clean: '[[ -z "$(git status --porcelain)" ]]',
       git_add: 'git add .',
       git_commit: {
-        cmd: function( m ) {
+        cmd: function (m) {
           return format('git commit -m "%s"', m);
         }
       },
-
       karma: './node_modules/karma/bin/karma start'
     },
-
     /**
      * mocha unit tests
      */
@@ -381,7 +376,6 @@ module.exports = function( grunt ) {
         }
       }
     },
-
     /**
      * Local Web server
      */
@@ -390,29 +384,30 @@ module.exports = function( grunt ) {
         base: '.',
         hostname: '*',
         port: 8888,
-        middleware: function( connect ) {
+        middleware: function (connect) {
           return [
-            function( req, res, next ) {
+            function (req, res, next) {
               res.setHeader('Access-Control-Allow-Origin',
                 '*');
               res.setHeader('Access-Control-Allow-Methods',
                 '*');
-
               return next();
             },
-            connect.static(require('path').resolve('.'))
+            //connect.static(require('path').resolve('.'))
+            serveStatic(require('path').resolve('.'))
+
           ];
         }
       },
       e2etest: {
         /*options: {
-            // set the location of the application files
-            base: ['app']
-        }*/
+         // set the location of the application files
+         base: ['app']
+         }*/
       }
     },
     ngdocs: {
-      all: [ 'src/**/*.js' ]
+      all: ['src/**/*.js']
     },
     jsdoc: {
       dist: {
@@ -446,11 +441,10 @@ module.exports = function( grunt ) {
       //}
     }
   });
-
   /**
    * Release Tasks
    */
-  grunt.registerTask('updmanifests', 'Update manifests.', function() {
+  grunt.registerTask('updmanifests', 'Update manifests.', function () {
     //Update version on manifests files
     var _ = grunt.util._,
       pkg = grunt.file.readJSON('package.json'),
@@ -473,27 +467,27 @@ module.exports = function( grunt ) {
    * :major
    */
   grunt.registerTask('release:patch', ['release']);
-  grunt.registerTask('release:minor', function() {
+  grunt.registerTask('release:minor', function () {
     grunt.option('tagType', 'minor');
     grunt.task.run(['release']);
   });
-  grunt.registerTask('release:major', function() {
+  grunt.registerTask('release:major', function () {
     grunt.option('tagType', 'major');
     grunt.task.run(['release']);
   });
-  grunt.registerTask('release', function() {
-    if ( grunt.option('tagType') !== 'major' &&
-      grunt.option('tagType') !== 'minor' ) {
+  grunt.registerTask('release', function () {
+    if (grunt.option('tagType') !== 'major' &&
+      grunt.option('tagType') !== 'minor') {
       grunt.option('tagType', 'patch');
     }
     var resp = readlineSync.question(format('\nRelease [%s] (Y/n)?', grunt.option('tagType')));
-    if ( resp.toLowerCase() !== 'y' ) {
+    if (resp.toLowerCase() !== 'y') {
       return false;
     }
     var done = this.async();
     child_process.exec('git describe --tags --abbrev=0',
-      function( err, stdout, stderr ) {
-        if ( stderr ) {
+      function (err, stdout, stderr) {
+        if (stderr) {
           grunt.log.error(stderr);
         }
         else {
@@ -517,10 +511,10 @@ module.exports = function( grunt ) {
       }
     );
   });
-  grunt.registerTask('push', function() {
+  grunt.registerTask('push', function () {
     //push to remote
     this.requires('release');
-    if ( grunt.option("remote") ) {
+    if (grunt.option("remote")) {
       grunt.task.run([
         format('step:Push changes to %s?', grunt.option("remote")),
         'shell:push:true'
@@ -530,13 +524,11 @@ module.exports = function( grunt ) {
       return false;
     }
   });
-
   /**
    * Test tasks
    */
-  grunt.registerTask('test', ['jshint', 'connect', 'mocha:unit', 'watch:mochaunit' ]);
+  grunt.registerTask('test', ['jshint', 'connect', 'mocha:unit', 'watch:mochaunit']);
   grunt.registerTask('test:deploy', ['connect', 'mocha:unitdeploy']);
-
   /**
    * Build Task
    */

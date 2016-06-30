@@ -1,5 +1,8 @@
 # simple-basket
 
+[![Dependency Status](https://david-dm.org/borntorun/simple-basket.svg)](https://david-dm.org/borntorun/simple-basket)
+[![devDependency Status](https://david-dm.org/borntorun/simple-basket/dev-status.svg)](https://david-dm.org/borntorun/simple-basket#info=devDependencies)
+
 A simple javascript basket for values.
 
 Store values and objects in an array in memory.

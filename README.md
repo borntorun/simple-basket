@@ -7,11 +7,11 @@ Store values and objects in an array in memory.
 Dependencies
 ----------
 
-[lodash](https://github.com/lodash/lodash) **version: ~3.9.3**
+[lodash](https://github.com/lodash/lodash) **version: ^4.13.1**
 
 If you want to use the storage feature included that permits a basket to be saved in browser databases with the localforage package, you'll need:
 
-* [es6-promise](https://github.com/jakearchibald/es6-promise) **version ~2.2.0**
+* [es6-promise](https://github.com/jakearchibald/es6-promise) **version ~3.2.2**
 * [localforage](https://github.com/mozilla/localForage) **version ~1.2.3**
 * [localforage-sessionstoragewrapper](https://github.com/thgreasi/localForage-sessionStorageWrapper) **version ~1.0.1**
 

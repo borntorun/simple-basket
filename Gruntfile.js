@@ -345,6 +345,7 @@ module.exports = function (grunt) {
    * Release
    */
   grunt.registerTask('release', ['releasebuild:default']);
+  grunt.registerTask('release:minor', ['releasebuild:minor']);
   /**
    * Default
    */
